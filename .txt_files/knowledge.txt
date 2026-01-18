@@ -1,0 +1,2391 @@
+================================================================================
+MARKETPULSE - KNOWLEDGE BASE
+================================================================================
+Project  : MarketPulse (Real-Time Order Book Visualizer)
+App Name : MarketPulse
+
+Welcome! This is your friendly guide to understanding all the tools and 
+concepts we're using in this project. Don't worry if you're new to this - 
+we'll explain everything in simple terms with real examples!
+================================================================================
+
+================================================================================
+🔧 BUILD TOOLS & COMPILERS
+================================================================================
+Think of these as the "kitchen appliances" that help us cook our code into
+a working program!
+
+--------------------------------------------------------------------------------
+MINGW-W64 (Minimalist GNU for Windows)
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Imagine you write a letter in English, but your computer only understands
+   binary (0s and 1s). MinGW-w64 is like a translator that converts your 
+   C++ code into something the computer can actually run!
+
+🎯 In simple terms:
+   Your C++ Code  →  [MinGW-w64/g++]  →  Program.exe (that you can run!)
+
+📦 What's inside?
+   - g++  : The main translator (compiler) for C++ code
+   - gcc  : Same thing but for C code
+   - gdb  : A detective tool to find bugs in your code (debugger)
+
+💡 Real Example:
+   You write this code:
+   
+      #include <iostream>
+      int main() {
+          std::cout << "Hello, Trader!" << std::endl;
+          return 0;
+      }
+   
+   Then you run: g++ -o hello.exe hello.cpp
+   
+   Now you have hello.exe that prints "Hello, Trader!" when you run it!
+
+❓ Why not just use Notepad?
+   Notepad can only edit text. g++ actually turns that text into a program
+   your computer can execute. It's the difference between having a recipe
+   and actually cooking the meal!
+
+--------------------------------------------------------------------------------
+MSYS2 (Minimal System 2)
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Think of MSYS2 as an "App Store" for programming tools on Windows.
+   Instead of downloading tools from random websites, you use MSYS2's
+   package manager to install everything safely and easily.
+
+🎯 In simple terms:
+   It's like the Google Play Store or Apple App Store, but for developer tools!
+
+📦 The magic command - pacman:
+   Just like how you'd search and install apps on your phone, pacman lets
+   you install programming tools with simple commands:
+   
+      pacman -S mingw-w64-x86_64-gcc     # Install the C++ compiler
+      pacman -S mingw-w64-x86_64-make    # Install the build tool
+   
+   The "-S" means "sync/install" - easy to remember as "S for Setup"!
+
+📍 Where does it live?
+   Usually at: C:\msys64\
+   The compiler ends up at: C:\msys64\mingw64\bin\g++.exe
+
+--------------------------------------------------------------------------------
+CMAKE - The Project Manager
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Imagine you're building IKEA furniture. CMake is like the instruction
+   manual that tells you which pieces go together and in what order.
+   
+   For code, it figures out:
+   - Which files need to be compiled
+   - In what order
+   - With what settings
+
+🎯 In simple terms:
+   CMakeLists.txt is your project's recipe book. It tells the computer:
+   "Hey, to build this project, compile these files, link these libraries,
+   and create this executable!"
+
+💡 Real Example - CMakeLists.txt:
+   
+      cmake_minimum_required(VERSION 3.16)
+      project(OrderBookVisualizer)        # Our project name
+      
+      add_executable(orderbook            # Create orderbook.exe
+          src/main.cpp                    # Using these source files
+          src/OrderBook.cpp
+      )
+   
+   This is SO much easier than remembering long compiler commands!
+
+🔄 The CMake workflow (it's just 2 steps!):
+   
+   Step 1: Configure (create the build instructions)
+      cmake -B build -G "MinGW Makefiles"
+      
+      Translation: "Hey CMake, read my CMakeLists.txt and create build
+                   instructions in a folder called 'build'"
+   
+   Step 2: Build (actually compile everything)
+      cmake --build build
+      
+      Translation: "Now follow those instructions and build my program!"
+
+❓ Why use CMake instead of just calling g++ directly?
+   
+   With just g++, you'd have to type:
+      g++ -o program.exe file1.cpp file2.cpp file3.cpp file4.cpp -lpthread -Wall
+   
+   And remember that EVERY. SINGLE. TIME. 😫
+   
+   With CMake, you just write the recipe once, then:
+      cmake --build build
+   
+   Done! CMake remembers everything for you. 🎉
+
+--------------------------------------------------------------------------------
+MAKE / MINGW32-MAKE - The Build Runner
+--------------------------------------------------------------------------------
+🤔 What is it?
+   If CMake writes the recipe, Make is the chef that actually cooks it!
+   Make reads the instructions (Makefile) and executes them.
+
+🎯 In simple terms:
+   CMakeLists.txt → [CMake] → Makefile → [Make] → Your Program!
+
+⚡ The smart part:
+   Make is clever - if you change just ONE file, it only recompiles that
+   file, not the entire project. This saves TONS of time on big projects!
+   
+   Changed Order.cpp? Make only recompiles Order.cpp, not everything else.
+
+================================================================================
+💻 C++ CONCEPTS USED IN THIS PROJECT
+================================================================================
+Don't worry - we'll explain these like you're learning to cook, not reading
+a chemistry textbook!
+
+--------------------------------------------------------------------------------
+MULTITHREADING (Running things in parallel)
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Imagine a restaurant kitchen:
+   - Single-threaded: ONE chef does everything - chops veggies, then 
+     cooks meat, then makes sauce, then plates. Slow! 🐢
+   - Multi-threaded: MULTIPLE chefs work at the same time - one chops,
+     one cooks, one plates. Fast! 🚀
+
+🎯 In our Order Book:
+   - Thread 1: Receives incoming orders from the market
+   - Thread 2: Processes and matches orders
+   - Thread 3: Updates the visual display
+   
+   All happening AT THE SAME TIME! Much faster than doing one after another.
+
+💡 Real Example:
+   
+      #include <thread>
+      #include <iostream>
+      
+      void processOrders() {
+          std::cout << "Processing orders..." << std::endl;
+      }
+      
+      void updateDisplay() {
+          std::cout << "Updating screen..." << std::endl;
+      }
+      
+      int main() {
+          // Start both tasks at the same time!
+          std::thread worker1(processOrders);
+          std::thread worker2(updateDisplay);
+          
+          // Wait for both to finish
+          worker1.join();
+          worker2.join();
+          
+          return 0;
+      }
+   
+   Both functions run simultaneously - like two chefs working together!
+
+--------------------------------------------------------------------------------
+MUTEX (The Bathroom Lock 🚽)
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Imagine a single bathroom shared by multiple people. You need a LOCK
+   to make sure only ONE person uses it at a time. Otherwise... chaos! 😱
+   
+   A mutex (mutual exclusion) is that lock for your data.
+
+🎯 The Problem it solves:
+   Without a mutex:
+      Thread 1: Reads account balance ($100)
+      Thread 2: Reads account balance ($100)
+      Thread 1: Adds $50, writes $150
+      Thread 2: Subtracts $30, writes $70    ← WRONG! Should be $120!
+   
+   With a mutex:
+      Thread 1: LOCKS, reads $100, adds $50, writes $150, UNLOCKS
+      Thread 2: Waits... LOCKS, reads $150, subtracts $30, writes $120, UNLOCKS ✓
+
+💡 Real Example:
+   
+      #include <mutex>
+      
+      std::mutex orderBookLock;  // Our "bathroom lock"
+      
+      void addOrder(Order order) {
+          // Lock the door before entering
+          std::lock_guard<std::mutex> guard(orderBookLock);
+          
+          // Now we're safe - only we can modify the order book
+          orderBook.add(order);
+          
+          // Lock automatically releases when we leave this function
+      }
+   
+   std::lock_guard is like an automatic door - it locks when you enter
+   and unlocks when you leave. You can't forget to unlock!
+
+--------------------------------------------------------------------------------
+DATA STRUCTURES (Ways to organize data)
+--------------------------------------------------------------------------------
+Think of these as different types of containers in your kitchen:
+
+📚 std::map - The Sorted Filing Cabinet
+   - Keeps everything in order (sorted by key)
+   - Great for: Price levels (highest bids first, lowest asks first)
+   - Finding things: Pretty fast (O(log n) - we'll explain this later!)
+   
+   Example:
+      std::map<double, int> priceToQuantity;
+      priceToQuantity[100.50] = 500;  // 500 shares at $100.50
+      priceToQuantity[100.00] = 300;  // 300 shares at $100.00
+      // Automatically sorted: $100.00 comes before $100.50
+
+🗃️ std::unordered_map - The Hash Table (Super Fast Lookup)
+   - Not sorted, but SUPER fast to find things
+   - Great for: Finding an order by its ID
+   - Finding things: Almost instant! (O(1))
+   
+   Example:
+      std::unordered_map<int, Order> orderById;
+      orderById[12345] = myOrder;
+      
+      // Later, find it instantly:
+      Order found = orderById[12345];  // Boom! Found it!
+
+📬 std::queue - The Line at a Coffee Shop
+   - First In, First Out (FIFO)
+   - Great for: Processing orders in the order they arrived
+   - Fair! Whoever came first gets served first.
+   
+   Example:
+      std::queue<Order> incomingOrders;
+      incomingOrders.push(order1);  // Customer 1 joins line
+      incomingOrders.push(order2);  // Customer 2 joins line
+      
+      Order next = incomingOrders.front();  // Serve customer 1 first
+      incomingOrders.pop();                  // Customer 1 leaves
+
+================================================================================
+📈 ORDER BOOK CONCEPTS
+================================================================================
+This is the heart of our project! Let's understand what we're building.
+
+--------------------------------------------------------------------------------
+WHAT IS AN ORDER BOOK?
+--------------------------------------------------------------------------------
+🤔 Imagine a marketplace:
+   - BUYERS shouting: "I'll buy 100 apples for $1 each!"
+   - SELLERS shouting: "I'll sell 50 apples for $1.10 each!"
+   
+   An Order Book is simply a organized list of all these shouts!
+
+📊 Visual Example:
+   
+      ╔═══════════════════════════════════════════════════════╗
+      ║              ORDER BOOK - AAPL Stock                  ║
+      ╠═══════════════════════════════════════════════════════╣
+      ║     BIDS (Buyers)      │      ASKS (Sellers)          ║
+      ║   "I want to BUY"      │    "I want to SELL"          ║
+      ╠═══════════════════════════════════════════════════════╣
+      ║                        │  $150.25  x  100 shares      ║
+      ║                        │  $150.20  x  250 shares      ║
+      ║                        │  $150.15  x  500 shares ←ASK ║
+      ║  ─────────────────── SPREAD ($0.10) ──────────────    ║
+      ║  $150.05  x  300 ←BID │                               ║
+      ║  $150.00  x  450      │                               ║
+      ║  $149.95  x  200      │                               ║
+      ╚═══════════════════════════════════════════════════════╝
+      
+      Best Bid: $150.05 (highest price someone will pay)
+      Best Ask: $150.15 (lowest price someone will sell)
+      Spread:   $0.10   (the gap between them)
+
+🎯 Key Points:
+   - BIDS are sorted HIGHEST first (best price for sellers at top)
+   - ASKS are sorted LOWEST first (best price for buyers at top)
+   - When Bid >= Ask, a trade happens!
+
+--------------------------------------------------------------------------------
+ORDER BOOK DISPLAY LAYOUT
+--------------------------------------------------------------------------------
+How prices are sorted and displayed in the UI:
+
+  BACKEND GENERATION (ws-server.js):
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Bids: mid - spread/2 - (i * 0.05)  →  Highest to Lowest (descending)  │
+  │  Asks: mid + spread/2 + (i * 0.05)  →  Lowest to Highest (ascending)   │
+  └─────────────────────────────────────────────────────────────────────────┘
+  
+  FRONTEND DISPLAY (OrderBook.tsx):
+  ┌─────────────────────────────────────┐
+  │  ASK (Sell Orders)    ← Red         │
+  │  $100.50  (worst ask)               │  ↑ Uses flex-col-reverse
+  │  $100.45                            │  │ so lowest ask appears
+  │  $100.40                            │  │ at bottom (near spread)
+  │  $100.35                            │  │
+  │  $100.30                            │  │
+  │  $100.25                            │  │
+  │  $100.20                            │  │
+  │  $100.15                            │  │
+  │  $100.10                            │  │
+  │  $100.05  (best ask)  ← Near spread │
+  ├─────────────────────────────────────┤
+  │  Best Bid: $99.95                   │  ← SPREAD DIVIDER
+  │  Best Ask: $100.05                  │
+  │  Spread: $0.10                      │
+  ├─────────────────────────────────────┤
+  │  BID (Buy Orders)     ← Green       │
+  │  $99.95   (best bid)  ← Near spread │  Natural array order
+  │  $99.90                             │  (highest first)
+  │  $99.85                             │
+  │  $99.80                             │
+  │  ...                                │
+  │  $99.50   (worst bid)               │
+  └─────────────────────────────────────┘
+
+  The best prices MEET IN THE MIDDLE at the spread divider.
+  This is the standard layout used by Binance, Coinbase, etc.
+
+--------------------------------------------------------------------------------
+ORDER TYPES
+--------------------------------------------------------------------------------
+📝 LIMIT ORDER - "I want THIS price or better"
+   Example: "Buy 100 shares at $150.00 or less"
+   - Your order waits in the book until someone matches it
+   - Patient approach - you might get a better price!
+
+⚡ MARKET ORDER - "I want it NOW, any price!"
+   Example: "Buy 100 shares RIGHT NOW at whatever the best price is"
+   - Executes immediately against the best available price
+   - Fast, but you might pay more
+
+🔄 Order Sides:
+   - BUY  (Bid) - You want to purchase
+   - SELL (Ask) - You want to get rid of
+
+--------------------------------------------------------------------------------
+PRICE LEVEL
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Multiple people might want to buy at the SAME price. A Price Level
+   groups them together!
+
+💡 Example:
+   Price Level at $150.00:
+      - Order #1: Buy 100 shares (arrived 9:00 AM)
+      - Order #2: Buy 200 shares (arrived 9:01 AM)
+      - Order #3: Buy 150 shares (arrived 9:02 AM)
+      ─────────────────────────────────
+      Total: 450 shares available at $150.00
+
+   When someone sells at $150.00, Order #1 gets filled first (it arrived
+   first). This is called "Price-Time Priority" - best price wins, and
+   if same price, first-come-first-served!
+
+--------------------------------------------------------------------------------
+MATCHING ENGINE - The Matchmaker 💕
+--------------------------------------------------------------------------------
+🤔 What is it?
+   The matching engine is like a dating app for orders - it finds buyers
+   and sellers who are compatible and pairs them up!
+
+🔄 How it works:
+   
+   1. New SELL order arrives: "Sell 100 at $150.00"
+   
+   2. Engine checks BIDS: "Is anyone willing to pay $150.00 or MORE?"
+      - Best Bid is $150.05 ← YES! They'll pay even more!
+   
+   3. MATCH! Trade happens at $150.05
+      - Buyer pays $150.05 (they were willing to pay up to $150.05)
+      - Seller receives $150.05 (they wanted at least $150.00) 
+      - Everyone's happy! 🎉
+
+   4. If the sell order isn't fully filled, it goes into the book as an ASK
+
+💡 Example Walkthrough:
+   
+   Starting Order Book:
+      BIDS              ASKS
+      $100.00 x 200     $101.00 x 150
+      $99.50  x 300     $101.50 x 200
+   
+   New Order: SELL 250 shares at $99.50 (market sell)
+   
+   Step 1: Match with best bid ($100.00 x 200)
+           → Trade 200 shares at $100.00
+           → 50 shares remaining to sell
+   
+   Step 2: Match with next bid ($99.50 x 300)
+           → Trade 50 shares at $99.50
+           → Order complete!
+   
+   Final Order Book:
+      BIDS              ASKS
+      $99.50  x 250     $101.00 x 150
+                        $101.50 x 200
+
+================================================================================
+📁 PROJECT FILE STRUCTURE
+================================================================================
+Here's how our project folder is organized - like rooms in a house!
+
+   order-book-visualizer/           ← 🏠 Our project home
+   │
+   ├── 📄 CMakeLists.txt            ← The master build recipe
+   ├── 📄 build_log.txt             ← Our work diary/journal
+   ├── 📄 tasks.txt                 ← Our to-do list
+   ├── 📄 knowledge.txt             ← You are here! 👋
+   │
+   ├── 📂 build/                    ← Where compiled programs go (auto-generated)
+   │
+   ├── 📂 include/                  ← Header files (the "table of contents")
+   │   ├── Order.h                  ← What an Order looks like
+   │   ├── OrderBook.h              ← What an OrderBook looks like
+   │   └── Visualizer.h             ← What the Visualizer looks like
+   │
+   ├── 📂 src/                      ← Source files (the actual code)
+   │   ├── CMakeLists.txt           ← Build recipe for src folder
+   │   ├── main.cpp                 ← Where the program starts
+   │   ├── Order.cpp                ← Order implementation
+   │   ├── OrderBook.cpp            ← OrderBook implementation
+   │   └── Visualizer.cpp           ← Visualizer implementation
+   │
+   └── 📂 tests/                    ← Test files (making sure code works)
+       ├── CMakeLists.txt           ← Build recipe for tests
+       └── test_orderbook.cpp       ← Tests for OrderBook
+
+💡 Why separate include/ and src/?
+   - Headers (.h) are like a menu - they list what's available
+   - Source (.cpp) is like the kitchen - where the actual cooking happens
+   - Other files can read the menu without entering the kitchen!
+
+================================================================================
+⌨️ USEFUL COMMANDS CHEAT SHEET
+================================================================================
+Keep this handy! These are the commands you'll use most often.
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CHECKING IF TOOLS ARE INSTALLED                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ g++ --version          │ Check if C++ compiler is installed                 │
+│ cmake --version        │ Check if CMake is installed                        │
+│ where g++              │ Find where g++ is located                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ BUILDING THE PROJECT                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ cd C:\Projects\order-book-visualizer     │ Go to project folder            │
+│ cmake -B build -G "MinGW Makefiles"      │ Configure (first time only)     │
+│ cmake --build build                       │ Build the project               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ RUNNING THE PROGRAM                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ .\build\orderbook.exe                    │ Run the program                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ RUNNING TESTS                                                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ cd build                                 │ Go to build folder               │
+│ ctest                                    │ Run all tests                    │
+│ ctest --verbose                          │ Run tests with details           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CLEANING UP (Start fresh)                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Remove-Item -Recurse -Force build        │ Delete build folder             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+📖 GLOSSARY - Quick Definitions
+================================================================================
+
+Bid         → An offer to BUY at a certain price
+Ask         → An offer to SELL at a certain price  
+Spread      → The gap between best bid and best ask
+Compile     → Convert human-readable code into computer-executable program
+Link        → Connect compiled pieces together into one program
+Thread      → A separate path of execution (like a worker)
+Mutex       → A lock to prevent multiple threads from conflicting
+FIFO        → First In, First Out (like a queue/line)
+Header      → A .h file that describes what functions/classes exist
+Source      → A .cpp file that contains the actual code implementation
+Executable  → A program you can run (.exe on Windows)
+
+================================================================================
+�️ COMMANDS WE USED IN THIS PROJECT (with explanations!)
+================================================================================
+These are the actual commands we ran to set up this project. Each one is 
+explained so you understand exactly what's happening!
+
+--------------------------------------------------------------------------------
+📦 INSTALLING MSYS2 (The tool store)
+--------------------------------------------------------------------------------
+COMMAND:
+   winget install -e --id MSYS2.MSYS2 --accept-package-agreements --accept-source-agreements
+
+WHAT EACH PART MEANS:
+   winget install          → "Hey Windows, install something for me"
+   -e                      → "Exact match" - make sure it's exactly this package
+   --id MSYS2.MSYS2        → The unique ID of the package we want
+   --accept-package-agreements  → "Yes, I agree to the terms" (skips the prompt)
+   --accept-source-agreements   → "Yes, I trust this source" (skips the prompt)
+
+IN PLAIN ENGLISH:
+   "Windows, please install MSYS2 from the official source, and don't ask me
+   to click 'I agree' - just do it!"
+
+WHY WE NEED IT:
+   MSYS2 gives us access to the 'pacman' package manager, which lets us easily
+   install the C++ compiler (g++) and other tools.
+
+--------------------------------------------------------------------------------
+📦 INSTALLING CMAKE (The build manager)
+--------------------------------------------------------------------------------
+COMMAND:
+   winget install -e --id Kitware.CMake --accept-package-agreements --accept-source-agreements
+
+IN PLAIN ENGLISH:
+   "Windows, please install CMake from Kitware (the company that makes it)."
+
+WHY WE NEED IT:
+   CMake reads our project's recipe (CMakeLists.txt) and figures out how to
+   compile everything. Without it, we'd have to type long, complicated 
+   compiler commands every single time!
+
+--------------------------------------------------------------------------------
+📦 INSTALLING G++ COMPILER (The code translator)
+--------------------------------------------------------------------------------
+COMMAND:
+   C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-make"
+
+WHAT EACH PART MEANS:
+   C:\msys64\usr\bin\bash.exe  → Run the MSYS2 bash shell
+   -lc                          → "-l" = login shell, "-c" = run this command
+   "pacman -S ..."              → The command to run inside MSYS2
+
+   Inside the quotes:
+   pacman                       → The package manager (like an app store)
+   -S                           → "Sync/Install" these packages
+   --noconfirm                  → "Don't ask me 'are you sure?', just do it"
+   mingw-w64-x86_64-gcc         → The C/C++ compiler package
+   mingw-w64-x86_64-make        → The 'make' build tool package
+
+IN PLAIN ENGLISH:
+   "Open the MSYS2 terminal and install the C++ compiler and make tool, 
+   without asking for confirmation."
+
+WHY WE NEED IT:
+   This installs g++ (the actual program that turns our C++ code into .exe files)
+   and make (the tool that runs the build process).
+
+--------------------------------------------------------------------------------
+🔧 SETTING UP PATH (Telling Windows where our tools are)
+--------------------------------------------------------------------------------
+COMMAND (PowerShell - temporary, for current session only):
+   $env:Path = "C:\msys64\mingw64\bin;C:\Program Files\CMake\bin;" + $env:Path
+
+WHAT EACH PART MEANS:
+   $env:Path                    → The PATH environment variable (where Windows 
+                                  looks for programs)
+   =                            → We're setting it to a new value
+   "C:\msys64\mingw64\bin;"     → Add MinGW folder (where g++.exe lives)
+   "C:\Program Files\CMake\bin;" → Add CMake folder (where cmake.exe lives)
+   + $env:Path                  → Keep all the existing PATH entries too!
+
+IN PLAIN ENGLISH:
+   "Hey Windows, when I type 'g++' or 'cmake', look in these folders first,
+   then check everywhere you normally would."
+
+WHY WE NEED IT:
+   Without this, you'd have to type the FULL path every time:
+      C:\msys64\mingw64\bin\g++.exe --version    ← Annoying! 😫
+   With PATH set:
+      g++ --version                               ← Much better! 🎉
+
+MAKING IT PERMANENT (so you don't have to set it every time):
+   Option 1 - Using PowerShell (for current user):
+   [Environment]::SetEnvironmentVariable("Path", "C:\msys64\mingw64\bin;C:\Program Files\CMake\bin;" + $env:Path, "User")
+   
+   Option 2 - Using Windows GUI:
+   1. Press Win + R, type "sysdm.cpl", press Enter
+   2. Click "Advanced" tab → "Environment Variables"
+   3. Under "User variables", find "Path", click "Edit"
+   4. Click "New" and add: C:\msys64\mingw64\bin
+   5. Click "New" and add: C:\Program Files\CMake\bin
+   6. Click OK, OK, OK
+   7. Restart your terminal!
+
+--------------------------------------------------------------------------------
+✅ VERIFYING INSTALLATION (Making sure everything works)
+--------------------------------------------------------------------------------
+COMMANDS:
+   g++ --version       → Should show "g++ (Rev...) 15.x.x" or similar
+   cmake --version     → Should show "cmake version 4.x.x" or similar
+   where g++           → Should show "C:\msys64\mingw64\bin\g++.exe"
+
+IF SOMETHING DOESN'T WORK:
+   - "g++ is not recognized" → PATH is not set correctly, see above
+   - "cmake is not recognized" → PATH is not set correctly
+   - Nothing shows up → The tool wasn't installed, try installing again
+
+================================================================================
+�🔗 HELPFUL RESOURCES
+================================================================================
+
+📚 Learning C++:
+   - https://www.learncpp.com/ (Excellent free tutorial!)
+   - https://en.cppreference.com/ (The C++ dictionary)
+
+🔧 Tool Documentation:
+   - CMake: https://cmake.org/documentation/
+   - MinGW-w64: https://www.mingw-w64.org/
+   - MSYS2: https://www.msys2.org/
+
+📈 Order Book & Trading:
+   - Investopedia - "Order Book" article
+   - "Trading and Exchanges" by Larry Harris (book)
+
+================================================================================
+                    Happy Coding! You've got this! 💪
+================================================================================
+
+
+================================================================================
+BID-ASK SPREAD - Why It Matters for Price Movement
+================================================================================
+
+WHAT IS THE SPREAD?
+--------------------------------------------------------------------------------
+The spread is the difference between the best bid (highest buy price) and
+the best ask (lowest sell price).
+
+Example:
+   Best Bid: $99.95  (highest someone is willing to pay)
+   Best Ask: $100.00 (lowest someone is willing to sell)
+   Spread:   $0.05   (the gap between them)
+
+WHY DOES SPREAD MATTER?
+--------------------------------------------------------------------------------
+In a real market, the spread prevents constant order matching:
+
+   Small Spread ($0.01):
+   - Orders match very quickly
+   - Price moves rapidly as orders consume each other
+   - High trading activity
+
+   Large Spread ($0.25):
+   - Orders rarely match immediately
+   - Bid and ask levels build up visually
+   - Price changes require someone to "cross" the spread
+
+HOW IT WORKS IN OUR VISUALIZER:
+--------------------------------------------------------------------------------
+We control spread with + and - keys:
+
+   Default:  $0.05 (minimum)
+   Maximum:  $0.25
+   Step:     $0.05
+
+When you set spread to $0.15:
+   - Buy orders are placed at: currentPrice - (0.15/2) = currentPrice - 0.075
+   - Sell orders are placed at: currentPrice + (0.15/2) = currentPrice + 0.075
+
+This creates a natural gap so you can SEE the order book build up!
+
+TRY THIS:
+--------------------------------------------------------------------------------
+1. Start with spread at $0.05 (default) - notice lots of trades
+2. Press + a few times to increase spread to $0.20
+3. Watch how bid and ask levels accumulate more visibly
+4. Press - to decrease spread and see more trading activity
+
+================================================================================
+🌐 PHASE 2: WEB TECHNOLOGIES
+================================================================================
+For the web-based frontend visualization!
+
+--------------------------------------------------------------------------------
+WEBSOCKET - Real-Time Communication
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Imagine you and a friend have walkie-talkies. You don't need to "call" 
+   each other - you can just talk whenever you want, and the other person
+   hears you instantly. That's WebSocket!
+   
+   Compare to HTTP (regular web requests):
+   - HTTP: You ask, server answers, connection closes. Like sending letters.
+   - WebSocket: You connect once, then talk back and forth freely. Like a phone call.
+
+🎯 In simple terms:
+   WebSocket lets the backend PUSH data to the browser without the browser
+   constantly asking "got anything new? got anything new?"
+
+💡 Real Example - Browser Side:
+   
+      const ws = new WebSocket('ws://localhost:8080');
+      
+      ws.onopen = () => {
+          console.log('Connected!');
+          ws.send(JSON.stringify({ type: 'start' }));
+      };
+      
+      ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          console.log('Received:', data);
+      };
+
+📦 Libraries:
+   - Browser: Built-in WebSocket API
+   - Node.js: 'ws' package (npm install ws)
+   - C++: libwebsockets, websocketpp, Beast (Boost)
+
+--------------------------------------------------------------------------------
+NODE.JS + WS - Our WebSocket Server
+--------------------------------------------------------------------------------
+🤔 Why Node.js instead of C++ libwebsockets?
+   We tried C++ libwebsockets but hit protocol handshake issues:
+   - Error: "Invalid header token"
+   - Clients would connect then immediately disconnect
+   - Multiple fix attempts failed
+   
+   Node.js 'ws' library "just works" and is easier to debug!
+
+💡 Our ws-server.js structure:
+   
+      const WebSocket = require('ws');
+      const server = http.createServer();
+      const wss = new WebSocket.Server({ server });
+      
+      wss.on('connection', (ws) => {
+          console.log('Client connected');
+          
+          // Send data to this client
+          ws.send(JSON.stringify({ type: 'orderbook', data: {...} }));
+          
+          // Receive messages from client
+          ws.on('message', (msg) => {
+              const command = JSON.parse(msg);
+              // Handle sentiment, intensity, speed changes
+          });
+      });
+      
+      // Broadcast to ALL connected clients
+      function broadcast(message) {
+          wss.clients.forEach(client => {
+              if (client.readyState === WebSocket.OPEN) {
+                  client.send(JSON.stringify(message));
+              }
+          });
+      }
+
+--------------------------------------------------------------------------------
+REACT - Our Frontend Framework
+--------------------------------------------------------------------------------
+🤔 What is it?
+   React is like LEGO for web pages. Instead of building one giant HTML page,
+   you build small "components" (like LEGO bricks) and snap them together.
+
+🎯 In simple terms:
+   - Component = A reusable piece of UI (like a button, chart, or panel)
+   - Props = Data you pass TO a component (like settings)
+   - State = Data that can CHANGE inside a component
+   - Hook = A function that adds features to components (like useState, useEffect)
+
+💡 Our Components:
+   
+      App.tsx           - The main container (snaps everything together)
+      ├── Header.tsx    - Shows connection status
+      ├── PriceChart.tsx - The price line chart (uses Recharts)
+      ├── OrderBook.tsx  - Bid/ask depth visualization
+      ├── ControlPanel.tsx - Sentiment/intensity buttons
+      ├── StatsPanel.tsx - Market statistics
+      └── TradeTicker.tsx - Recent trades list
+
+📦 Key React Concepts:
+
+   // Component with State
+   function Counter() {
+       const [count, setCount] = useState(0);  // state hook
+       return <button onClick={() => setCount(count + 1)}>{count}</button>;
+   }
+   
+   // Component with Props
+   function Greeting({ name }) {  // name is a prop
+       return <h1>Hello, {name}!</h1>;
+   }
+   
+   // Using it: <Greeting name="Trader" />
+
+--------------------------------------------------------------------------------
+VITE - Our Build Tool
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Vite (French for "fast") is like a super-fast waiter for your code.
+   When you save a file, Vite instantly serves the updated version to your browser.
+
+🎯 In simple terms:
+   - Super fast development server (hot module replacement)
+   - Bundles your code for production
+   - Works great with React and TypeScript
+
+💡 Commands:
+   npm run dev    - Start development server (http://localhost:5173)
+   npm run build  - Build for production
+   npm run preview - Preview production build
+
+--------------------------------------------------------------------------------
+TYPESCRIPT - Type-Safe JavaScript
+--------------------------------------------------------------------------------
+🤔 What is it?
+   JavaScript lets you do anything... including making mistakes.
+   TypeScript is JavaScript with guardrails - it catches errors BEFORE you run the code!
+
+💡 Example - Without TypeScript:
+   
+      function addPrices(a, b) {
+          return a + b;
+      }
+      addPrices("$100", 50);  // Returns "$10050" - OOPS!
+
+💡 Example - With TypeScript:
+   
+      function addPrices(a: number, b: number): number {
+          return a + b;
+      }
+      addPrices("$100", 50);  // ERROR: Argument of type 'string' is not assignable!
+
+📦 Our interfaces (types.ts):
+   
+      interface OrderBookEntry {
+          price: number;
+          quantity: number;
+      }
+      
+      interface Trade {
+          id: number;
+          price: number;
+          quantity: number;
+          side: 'BUY' | 'SELL';
+          timestamp: number;
+      }
+
+--------------------------------------------------------------------------------
+TAILWIND CSS - Utility-First Styling
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Instead of writing CSS files, you add small utility classes directly to HTML.
+   It's like having a box of pre-made LEGO pieces for styling!
+
+💡 Traditional CSS:
+   
+      /* styles.css */
+      .error-button {
+          background-color: red;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 4px;
+      }
+      
+      <button class="error-button">Delete</button>
+
+💡 Tailwind CSS:
+   
+      <button class="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+   
+   No separate CSS file needed! Classes describe what they do:
+   - bg-red-500 = background color red (500 = medium shade)
+   - text-white = white text
+   - px-4 = padding horizontal 4 units
+   - py-2 = padding vertical 2 units
+   - rounded = border radius
+
+📦 Common classes we use:
+   - Layout: flex, grid, col-span-4, gap-4
+   - Spacing: p-4 (padding), m-2 (margin), space-y-2
+   - Colors: bg-slate-800, text-green-400, border-gray-700
+   - Text: text-sm, font-bold, text-center
+   - Effects: hover:bg-slate-700, transition
+
+--------------------------------------------------------------------------------
+RECHARTS - React Charting Library
+--------------------------------------------------------------------------------
+🤔 What is it?
+   A library of pre-built chart components for React.
+   Instead of drawing charts pixel by pixel, you just pass in data!
+
+💡 Our PriceChart example:
+   
+      <LineChart data={priceHistory}>
+          <XAxis dataKey="timestamp" />
+          <YAxis domain={['auto', 'auto']} />
+          <Line 
+              type="monotone" 
+              dataKey="price" 
+              stroke="#10b981"  // green color
+              dot={false}
+          />
+          <Tooltip />
+      </LineChart>
+   
+   The data looks like: [{ timestamp: 1234567890, price: 100.50 }, ...]
+   Recharts automatically draws the line connecting all the points!
+
+================================================================================
+🔧 TROUBLESHOOTING GUIDE
+================================================================================
+
+ISSUE: "cmake not found"
+--------------------------------------------------------------------------------
+Solution: Use MSYS2 shell to run cmake commands:
+   C:\msys64\msys2_shell.cmd -mingw64 -defterm -no-start -here -c "cmake --build ."
+
+ISSUE: WebSocket connects then immediately disconnects
+--------------------------------------------------------------------------------
+Symptoms: 
+   - Backend log shows: "Client connected" then "Client disconnected"
+   - Browser shows only "connecting..." message
+   - netstat shows many TIME_WAIT connections
+
+Possible causes:
+   1. Protocol mismatch (server expects subprotocol, client doesn't specify)
+   2. CORS issues
+   3. Server sending malformed HTTP upgrade response
+
+Solution: We switched from C++ libwebsockets to Node.js 'ws' library which
+handles the WebSocket handshake correctly.
+
+ISSUE: React component renders twice (StrictMode)
+--------------------------------------------------------------------------------
+Symptom: Console logs appear twice, WebSocket connects twice
+Cause: React.StrictMode in development mode intentionally renders twice
+       to help find bugs.
+       
+Solution: Use useRef to track if already initialized:
+   const hasConnected = useRef(false);
+   useEffect(() => {
+       if (hasConnected.current) return;
+       hasConnected.current = true;
+       // ... connect
+   }, []);
+
+ISSUE: TypeScript error "Parameter implicitly has 'any' type"
+--------------------------------------------------------------------------------
+Cause: TypeScript's strict mode requires all parameters to have explicit types
+Solution: Either add explicit type, or use type inference:
+   
+   // Before (error):
+   formatter={(value: number) => `$${value.toFixed(2)}`}
+   
+   // After (works):
+   formatter={(value) => value != null ? `$${value.toFixed(2)}` : ''}
+
+ISSUE: "Permission denied" when building (can't write .exe)
+--------------------------------------------------------------------------------
+Cause: The .exe file is still running!
+Solution: Kill the process first:
+   taskkill /F /IM orderbook.exe
+   Then rebuild.
+
+================================================================================
+📊 CANDLESTICK CHARTS & TIMEFRAMES
+================================================================================
+Understanding how professional trading charts work!
+
+--------------------------------------------------------------------------------
+CANDLESTICK CHARTS - Visual Price Representation
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Instead of a simple line showing prices, candlesticks show FOUR prices
+   for each time period: Open, High, Low, Close (OHLC).
+   
+   Each "candle" looks like this:
+   
+        │         ← High (highest price during period)
+        │
+      ┌─┴─┐       ← Body top (Open or Close, whichever is higher)
+      │   │
+      │   │       ← Body shows price range between Open and Close
+      │   │
+      └─┬─┘       ← Body bottom (Open or Close, whichever is lower)
+        │
+        │         ← Low (lowest price during period)
+
+🎯 Colors tell the story:
+   - GREEN candle: Price went UP (Close > Open) - Bullish!
+   - RED candle: Price went DOWN (Close < Open) - Bearish!
+
+💡 Real Example:
+   1-minute candle for $DEMO at 10:05:
+   
+      Open:  $100.00  (price at 10:05:00)
+      High:  $100.50  (highest during that minute)
+      Low:   $99.75   (lowest during that minute)
+      Close: $100.25  (price at 10:05:59)
+      
+      Result: GREEN candle (Close > Open), body from $100.00 to $100.25,
+              wicks extending to $99.75 and $100.50
+
+--------------------------------------------------------------------------------
+TIMEFRAMES - How Long is Each Candle?
+--------------------------------------------------------------------------------
+🤔 What is it?
+   The "timeframe" determines how much time each candle represents.
+   Shorter timeframes = more candles = more detail (but more noise).
+   Longer timeframes = fewer candles = smoother trends.
+
+📊 Common Timeframes:
+   
+   Timeframe  │ Use Case                      │ Typical Traders
+   ───────────┼───────────────────────────────┼─────────────────────
+   Tick       │ Every price update as a point │ HFT, Scalpers
+   1 second   │ Ultra high-frequency detail   │ Scalpers, HFT
+   5 seconds  │ Very short-term movements     │ Day traders
+   30 seconds │ Short-term patterns           │ Active traders
+   1 minute   │ Intraday trading              │ Day traders
+   5 minutes  │ Balanced intraday view        │ Swing traders
+   15 minutes │ Broader intraday patterns     │ Position traders
+   1 hour     │ Medium-term trends            │ Swing traders
+   1 day      │ Long-term trends              │ Investors
+
+💡 In our visualizer:
+   - Tick: Raw price data as line chart (most detailed)
+   - 1s:   Every second gets its own candle (very detailed)
+   - 5s:   Aggregates 5 seconds of data per candle
+   - 30s:  Aggregates 30 seconds of data per candle
+   - 1m:   Aggregates 1 minute of data per candle
+   - 5m:   Aggregates 5 minutes of data per candle (smoothest)
+
+--------------------------------------------------------------------------------
+VOLUME - Trading Activity Per Period
+--------------------------------------------------------------------------------
+🤔 What is it?
+   Volume = Total number of shares/units traded during a time period.
+   High volume = lots of trading activity = significant price move.
+   Low volume = few trades = less conviction in the move.
+
+📊 Volume bars appear below the price chart:
+   
+      Price Chart (Candles)
+      ─────────────────────
+          ▲
+         ╱╲▲
+        ╱  ╲╱╲
+       ╱     ╲
+      ─────────────────────
+      Volume Bars
+      ─────────────────────
+      █ █ █████ █ ██ █ ███
+      
+   Taller bars = more volume during that candle
+
+💡 Volume + Price = Confirmation:
+   - Price UP + High Volume = Strong bullish move (buyers in control)
+   - Price UP + Low Volume = Weak move (might reverse)
+   - Price DOWN + High Volume = Strong bearish move (sellers in control)
+   - Price DOWN + Low Volume = Weak move (might reverse)
+
+--------------------------------------------------------------------------------
+OHLC DATA STRUCTURE
+--------------------------------------------------------------------------------
+💻 In code, each candle is represented as:
+
+   interface Candle {
+       timestamp: number;     // Start time of the candle
+       open: number;          // First price in the period
+       high: number;          // Highest price in the period
+       low: number;           // Lowest price in the period
+       close: number;         // Last price in the period
+       volume: number;        // Total volume traded
+   }
+
+📦 Aggregating ticks into candles:
+   
+   // When a new price comes in:
+   if (isNewCandlePeriod(timestamp, timeframe)) {
+       // Start a new candle
+       currentCandle = { open: price, high: price, low: price, close: price };
+   } else {
+       // Update existing candle
+       currentCandle.high = Math.max(currentCandle.high, price);
+       currentCandle.low = Math.min(currentCandle.low, price);
+       currentCandle.close = price;
+       currentCandle.volume += tradeVolume;
+   }
+
+================================================================================
+📊 SENTIMENT & INTENSITY SYSTEM
+================================================================================
+The simulation allows you to configure market sentiment and intensity to
+create different market conditions.
+
+--------------------------------------------------------------------------------
+SENTIMENT TYPES
+--------------------------------------------------------------------------------
+Each sentiment affects price movement waves, trend bias, and order book depth:
+
+BULLISH 🐂
+  - 60% upward TREND BIAS (not constant drift)
+  - Wave-based movement with pullbacks every 15+ ticks
+  - 20% chance of counter-trend pullback
+  - Creates "higher highs, higher lows" pattern
+  - Order book: More bids, fewer asks (buyers)
+  - Use case: Simulate a rising market with realistic retracements
+
+BEARISH 🐻
+  - 60% downward TREND BIAS
+  - Wave-based movement with bounces every 15+ ticks
+  - 20% chance of counter-trend bounce
+  - Creates "lower highs, lower lows" pattern
+  - Order book: Fewer bids, more asks (sellers)
+  - Use case: Simulate a falling market with relief rallies
+
+VOLATILE ⚡
+  - NO directional bias
+  - LARGE wave amplitude (0.7), FAST wave speed
+  - 30% pullback chance - frequent reversals
+  - HIGH volatility (0.0012 base)
+  - Order book: THIN on both sides (low liquidity)
+  - Use case: Simulate uncertain/news-driven markets
+
+SIDEWAYS 😌 (formerly CALM)
+  - NO directional bias
+  - SMALL wave amplitude (0.2), slow waves
+  - 40% pullback chance - very range-bound
+  - VERY LOW volatility (0.0001 base)
+  - Order book: THICK on both sides (high liquidity)
+  - Use case: Simulate consolidation/accumulation phases
+
+CHOPPY 🌊
+  - NO directional bias
+  - Medium wave amplitude (0.5), VERY FAST wave speed
+  - 35% pullback chance - unpredictable
+  - Medium-high volatility (0.0008 base)
+  - Order book: Uneven, constantly shifting
+  - Use case: Simulate range-bound/whipsaw markets
+
+NEUTRAL ⚖️
+  - NO directional bias
+  - Moderate wave amplitude (0.3)
+  - 25% pullback chance
+  - Base volatility (0.0003)
+  - Order book: Balanced
+  - Use case: Default/baseline simulation
+
+--------------------------------------------------------------------------------
+INTENSITY LEVELS (Rebalanced 2026-01-18)
+--------------------------------------------------------------------------------
+Intensity MULTIPLIES the effects of sentiment:
+
+Level       │ Price Effect │ Volume Effect │ Description
+────────────┼──────────────┼───────────────┼────────────────────
+MILD        │ 0.4x         │ 0.5x          │ Gentle movements
+MODERATE    │ 0.7x         │ 0.8x          │ Moderate activity
+NORMAL      │ 1.0x         │ 1.0x          │ Default behavior
+AGGRESSIVE  │ 1.2x         │ 1.5x          │ Noticeable but controlled
+EXTREME     │ 1.6x         │ 2.0x          │ Fast but leaves room for shocks
+
+NOTE: Values were rebalanced from higher multipliers (AGGRESSIVE was 1.5x,
+EXTREME was 2.5x) to leave room for News Shock events to be impactful.
+Max speed also reduced from 4x to 2x.
+
+💡 Example combinations:
+   - BULLISH + EXTREME = Rapid price surge (FOMO rally)
+   - BEARISH + AGGRESSIVE = Strong sell-off
+   - VOLATILE + EXTREME = Crypto-like chaos
+   - SIDEWAYS + MILD = Almost flat line
+
+================================================================================
+📈 PROBABILITY-BASED PRICE MOVEMENT SYSTEM
+================================================================================
+Realistic price simulation using probability bias and forced pullbacks.
+
+--------------------------------------------------------------------------------
+THE PROBLEM WITH SIMPLE DRIFT
+--------------------------------------------------------------------------------
+Old approach: price += drift + random_noise
+
+  This creates UNREALISTIC movement:
+  - Straight lines up or down
+  - No pullbacks or pauses
+  - Doesn't look like real charts
+
+--------------------------------------------------------------------------------
+THE SOLUTION: PROBABILITY + FORCED PULLBACKS
+--------------------------------------------------------------------------------
+
+Two components combine for realistic movement:
+
+  1. PROBABILITY-BASED DIRECTION
+     - Each tick has a % chance of going up vs down
+     - Bullish: 65% UP, 35% DOWN
+     - Bearish: 35% UP, 65% DOWN
+     - Others: 50/50 balanced
+     
+  2. FORCED PULLBACKS
+     - After 8-15 consecutive moves in trend direction
+     - Force 2-5 ticks of counter-trend movement
+     - Pullback moves are slightly smaller (70-90% strength)
+     - Creates realistic "steps" in the chart
+
+--------------------------------------------------------------------------------
+VISUAL COMPARISON
+--------------------------------------------------------------------------------
+
+  OLD (Linear Drift):          NEW (Probability + Pullbacks):
+  
+       ╱                           ╱╲
+      ╱                          ╱  ╲╱╲
+     ╱                         ╱      ╲╱╲
+    ╱                        ╱          ╲╱╲
+   ╱                       ╱              ╲╱
+  ╱                       ╱
+  Straight line up        Steps with pullbacks
+
+--------------------------------------------------------------------------------
+SENTIMENT PARAMETERS
+--------------------------------------------------------------------------------
+
+  Sentiment  │ Up Prob │ Volatility │ Pullback Threshold │ Pullback Duration
+  ───────────┼─────────┼────────────┼────────────────────┼──────────────────
+  Bullish    │   65%   │   0.0005   │     8-15 ticks     │    2-5 ticks
+  Bearish    │   35%   │   0.0005   │     8-15 ticks     │    2-5 ticks
+  Volatile   │   50%   │   0.0015   │     8-15 ticks     │    2-5 ticks
+  Sideways   │   50%   │   0.0002   │     8-15 ticks     │    2-5 ticks
+  Choppy     │   50%   │   0.001    │     8-15 ticks     │    2-5 ticks
+  Neutral    │   50%   │   0.0004   │     8-15 ticks     │    2-5 ticks
+
+================================================================================
+🔌 MULTI-SESSION WEBSOCKET ARCHITECTURE
+================================================================================
+Our WebSocket server supports multiple independent simulations:
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+                    ┌─────────────────────┐
+                    │   WebSocket Server  │
+                    │     (port 8080)     │
+                    └──────────┬──────────┘
+                               │
+           ┌───────────────────┼───────────────────┐
+           │                   │                   │
+           ▼                   ▼                   ▼
+    ┌────────────┐      ┌────────────┐      ┌────────────┐
+    │  Session 1 │      │  Session 2 │      │  Session 3 │
+    │ AAPL $150  │      │ MSFT $400  │      │ DEMO $100  │
+    │  Bullish   │      │  Bearish   │      │  Volatile  │
+    └────────────┘      └────────────┘      └────────────┘
+           │                   │                   │
+           ▼                   ▼                   ▼
+    ┌────────────┐      ┌────────────┐      ┌────────────┐
+    │  Browser 1 │      │  Browser 2 │      │  Browser 3 │
+    └────────────┘      └────────────┘      └────────────┘
+
+Each browser tab gets its OWN:
+  ✓ Price simulation (independent price movement)
+  ✓ Order book (separate bid/ask levels)
+  ✓ Trade history (own trades list)
+  ✓ Controls (pause/play affects only that session)
+  ✓ Configuration (symbol, sentiment, intensity)
+
+--------------------------------------------------------------------------------
+SESSION LIFECYCLE
+--------------------------------------------------------------------------------
+1. CONNECT: Browser opens ws://localhost:8080
+   → Server creates new session with unique ID
+   → Session gets fresh simulation state
+
+2. CONFIGURE: Browser sends config (symbol, price, sentiment...)
+   → Server initializes that session's state
+   → Simulation starts for that session only
+
+3. RUN: Server broadcasts updates to that client only
+   → Order book, trades, stats, price points
+   → ~100ms update interval
+
+4. CONTROL: Browser sends commands (pause, reset, change sentiment...)
+   → Server updates ONLY that session's state
+   → Other sessions unaffected
+
+5. DISCONNECT: Browser closes or navigates away
+   → Server stops that session's simulation loop
+   → Session state is cleaned up
+   → Other sessions continue running
+
+================================================================================
+� WAVE-BASED PRICE MOVEMENT SYSTEM
+================================================================================
+Realistic price simulation using waves, momentum, and pullbacks.
+
+--------------------------------------------------------------------------------
+THE PROBLEM WITH SIMPLE DRIFT
+--------------------------------------------------------------------------------
+Old approach: price += drift + random_noise
+
+  This creates UNREALISTIC movement:
+  - Straight lines up or down
+  - No pullbacks or pauses
+  - Doesn't look like real charts
+
+--------------------------------------------------------------------------------
+THE SOLUTION: WAVE + MOMENTUM + PULLBACKS
+--------------------------------------------------------------------------------
+
+Three components combine for realistic movement:
+
+  1. WAVE COMPONENT (sin wave oscillation)
+     - Creates natural up/down cycles
+     - Amplitude controls wave size
+     - Speed controls how fast cycles occur
+     
+  2. TREND BIAS
+     - Bullish: 60% upward bias
+     - Bearish: 60% downward bias
+     - Others: 0% bias (balanced)
+     
+  3. MOMENTUM + PULLBACKS
+     - Price continues direction for ~15 ticks
+     - Then 20% chance of counter-trend pullback
+     - Creates realistic "steps" in the chart
+
+--------------------------------------------------------------------------------
+VISUAL COMPARISON
+--------------------------------------------------------------------------------
+
+  OLD (Linear Drift):          NEW (Wave-Based):
+  
+       ╱                           ╱╲
+      ╱                          ╱  ╲╱╲
+     ╱                         ╱      ╲╱╲
+    ╱                        ╱          ╲╱╲
+   ╱                       ╱              ╲╱
+  ╱                       ╱
+  Straight line up        Steps with pullbacks
+
+--------------------------------------------------------------------------------
+CODE STRUCTURE
+--------------------------------------------------------------------------------
+
+  state.wavePhase      // Current position in sin wave (0 to 2π)
+  state.momentum       // Accumulated directional strength
+  state.ticksSinceReversal  // Counts ticks since last pullback
+  state.lastMoveDirection   // 1 = up, -1 = down
+
+  Each tick:
+  1. Advance wavePhase
+  2. Calculate: trendBias + waveComponent + noise
+  3. Add momentum continuation bonus
+  4. Check for pullback trigger (if 15+ ticks)
+  5. Apply final price change
+
+--------------------------------------------------------------------------------
+SENTIMENT PARAMETERS
+--------------------------------------------------------------------------------
+
+  Sentiment  │ Trend Bias │ Wave Amp │ Wave Speed │ Pullback %
+  ───────────┼────────────┼──────────┼────────────┼───────────
+  Bullish    │    +0.6    │   0.4    │    0.04    │    20%
+  Bearish    │    -0.6    │   0.4    │    0.04    │    20%
+  Volatile   │     0      │   0.7    │    0.08    │    30%
+  Sideways   │     0      │   0.2    │    0.03    │    40%
+  Choppy     │     0      │   0.5    │    0.12    │    35%
+  Neutral    │     0      │   0.3    │    0.05    │    25%
+
+================================================================================
+�📊 CANDLE CACHING SYSTEM
+================================================================================
+Efficient storage for historical candlestick data across all timeframes.
+
+--------------------------------------------------------------------------------
+THE PROBLEM
+--------------------------------------------------------------------------------
+Storing raw price ticks for long timeframes is memory-intensive:
+  - 100ms updates = 10 ticks/second = 600 ticks/minute
+  - To show 50 five-minute candles, you'd need 150,000 raw price points!
+  - That's wasteful because once a candle closes, you only need OHLC.
+
+--------------------------------------------------------------------------------
+THE SOLUTION: SERVER-SIDE CANDLE CACHING
+--------------------------------------------------------------------------------
+Instead of storing raw ticks, we cache completed candles:
+
+  Raw Ticks               Candle Cache
+  ──────────              ────────────
+  [timestamp, price] ×N   { timestamp, O, H, L, C, volume }
+  
+  N price points      →   Just 5 values per candle!
+  (hundreds of bytes)     (~40 bytes)
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+                    ┌─────────────────────────────────────┐
+                    │         SERVER STATE                │
+                    │                                     │
+                    │  priceHistory: [100 recent ticks]   │
+                    │                                     │
+                    │  candleCache: {                     │
+                    │    1:   [500 x 1s candles]          │
+                    │    5:   [500 x 5s candles]          │
+                    │    30:  [500 x 30s candles]         │
+                    │    60:  [500 x 1m candles]          │
+                    │    300: [500 x 5m candles]          │
+                    │  }                                  │
+                    │                                     │
+                    │  currentCandles: {                  │
+                    │    1:   { current 1s candle }       │
+                    │    5:   { current 5s candle }       │
+                    │    ...                              │
+                    │  }                                  │
+                    └─────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+MESSAGE FLOW
+--------------------------------------------------------------------------------
+
+1. Every price tick → Server updates currentCandles for ALL timeframes
+   
+2. When a candle period ends:
+   → currentCandle moves to candleCache
+   → Server sends: { type: 'candle', data: { timeframe, candle } }
+   → Client adds to its cache
+
+3. When client changes timeframe:
+   → Client sends: { type: 'getCandles', timeframe: 300 }
+   → Server responds: { type: 'candleHistory', data: { candles, current } }
+
+4. On reset:
+   → Server sends: { type: 'candleReset' }
+   → Client clears all cached candles
+
+--------------------------------------------------------------------------------
+DATA LIMITS
+--------------------------------------------------------------------------------
+Timeframe  │  Max Cached  │  Time Coverage
+───────────┼──────────────┼─────────────────
+Tick       │  100 ticks   │  ~10 seconds
+1 second   │  500 candles │  ~8 minutes
+5 seconds  │  500 candles │  ~42 minutes
+30 seconds │  500 candles │  ~4 hours
+1 minute   │  500 candles │  ~8 hours
+5 minutes  │  500 candles │  ~42 hours
+
+--------------------------------------------------------------------------------
+CLIENT-SIDE USAGE
+--------------------------------------------------------------------------------
+The CandlestickChart component uses cached candles:
+
+  const allCandles = useMemo(() => {
+    if (timeframe === 0) {
+      // Tick: Convert raw price points to candle format
+      return aggregateToCandles(priceHistory, 0);
+    }
+    // Other timeframes: Use cached candles + current
+    const cached = candleCache[timeframe] || [];
+    const current = currentCandles[timeframe];
+    return current ? [...cached, current] : cached;
+  }, [timeframe, priceHistory, candleCache, currentCandles]);
+
+================================================================================
+🎓 EDUCATIONAL MODE
+================================================================================
+Contextual tooltips that explain trading concepts to beginners.
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+                    ┌─────────────────────────────────────┐
+                    │      EducationalModeContext         │
+                    │                                     │
+                    │  enabled: boolean                   │
+                    │  toggle: () => void                 │
+                    │                                     │
+                    └─────────────────┬───────────────────┘
+                                      │
+           ┌──────────────────────────┼──────────────────────────┐
+           │                          │                          │
+           ▼                          ▼                          ▼
+    ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
+    │  OrderBook  │           │ TradeTicker │           │   Chart     │
+    │  Tooltips   │           │  Tooltips   │           │  Tooltips   │
+    └─────────────┘           └─────────────┘           └─────────────┘
+
+--------------------------------------------------------------------------------
+EducationalTooltip COMPONENT
+--------------------------------------------------------------------------------
+A wrapper that shows explanatory tooltips on hover:
+
+  <EducationalTooltip
+    enabled={educationalMode}
+    content="Bid = Buy offer. Buyers willing to purchase at this price."
+    position="top"
+  >
+    <span>Bid</span>
+  </EducationalTooltip>
+
+Key features:
+  - Only shows when educational mode is enabled
+  - Uses CSS `display: contents` to not disrupt layout
+  - Positions automatically (top, bottom, left, right)
+  - Uses React Portal to render at document.body level
+  - Never clipped by parent overflow:hidden containers
+  - Fixed positioning with viewport boundary detection
+
+--------------------------------------------------------------------------------
+PORTAL-BASED TOOLTIP ARCHITECTURE
+--------------------------------------------------------------------------------
+
+  Normal DOM:                    With Portal:
+  
+  ┌─ Container ────────┐        ┌─ Container ────────┐
+  │  overflow: hidden  │        │  overflow: hidden  │
+  │  ┌─ Tooltip ─┐     │        │                    │
+  │  │  CLIPPED! │     │        │  [trigger element] │
+  │  └───────────┘     │        │                    │
+  │  [trigger element] │        └────────────────────┘
+  └────────────────────┘        
+                                ┌─ document.body ────┐
+                                │  ┌─ Tooltip ─────┐ │
+                                │  │  NOT CLIPPED! │ │
+                                │  └───────────────┘ │
+                                └────────────────────┘
+
+The tooltip calculates its position using:
+  1. getBoundingClientRect() on trigger element
+  2. Fixed positioning relative to viewport
+  3. Boundary checks to stay within screen
+
+--------------------------------------------------------------------------------
+TOOLTIP CONTENT EXAMPLES
+--------------------------------------------------------------------------------
+
+Order Book:
+  - Bid: "Buy orders waiting. Higher bid = more aggressive buyer."
+  - Ask: "Sell orders waiting. Lower ask = more aggressive seller."
+  - Spread: "Gap between best bid and ask. Smaller = more liquid market."
+  - Quantity: "Number of shares/contracts available at this price."
+
+Trade Ticker:
+  - Price: "Execution price of the trade."
+  - Quantity: "Volume traded in this transaction."
+  - Side: "BUY = buyer initiated, SELL = seller initiated."
+
+Chart:
+  - Candle: "Shows Open, High, Low, Close prices for the period."
+  - Volume: "Number of shares traded in this candle period."
+  - Timeframe: "Duration each candle represents."
+
+================================================================================
+🖱️ CUSTOM MOUSE TRACKING FOR TOOLTIPS
+================================================================================
+Precise tooltip display that only shows when hovering actual candles.
+
+--------------------------------------------------------------------------------
+THE PROBLEM
+--------------------------------------------------------------------------------
+Recharts' default Tooltip shows when hovering ANYWHERE on the chart:
+  - Empty space between candles triggers tooltip
+  - Tooltip data doesn't match mouse position visually
+  - Confusing for users
+
+--------------------------------------------------------------------------------
+THE SOLUTION: FIXED-POSITION CANDLES + CUSTOM TRACKING
+--------------------------------------------------------------------------------
+
+Candle positions are calculated with fixed pixel values:
+  - CANDLE_SPACING = 6px (total space per candle)
+  - FIXED_CANDLE_WIDTH = 4px
+  - Y_AXIS_WIDTH = 50px
+
+                    Y_AXIS_WIDTH
+                    ◄────────────►
+                    ┌─────────────┬─────────────────────────────────┐
+                    │             │ ┌┐  ┌┐  ┌┐  ┌┐  ┌┐  ┌┐  ┌┐     │
+                    │    Y-Axis   │ ││  ││  ││  ││  ││  ││  ││     │
+                    │             │ └┘  └┘  └┘  └┘  └┘  └┘  └┘     │
+                    │             │ ◄──►                            │
+                    │             │  6px                            │
+                    └─────────────┴─────────────────────────────────┘
+                                  ▲
+                                  │
+                    Candle X = Y_AXIS_WIDTH + (index * CANDLE_SPACING)
+
+--------------------------------------------------------------------------------
+MOUSE TRACKING LOGIC
+--------------------------------------------------------------------------------
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    
+    // Calculate which candle index the mouse is over
+    const candleIndex = Math.floor((mouseX - Y_AXIS_WIDTH) / CANDLE_SPACING);
+    
+    if (candleIndex >= 0 && candleIndex < candles.length) {
+      setHoveredCandle(candles[candleIndex]);  // Show tooltip
+      setTooltipPos({ x: mouseX, y: mouseY });
+    } else {
+      setHoveredCandle(null);  // Hide tooltip (mouse in empty space)
+    }
+  }, [candles]);
+
+This ensures:
+  ✓ Tooltip only shows when mouse is over a candle area
+  ✓ Correct candle data is displayed
+  ✓ Smooth tracking without jitter
+  ✓ Works consistently across all timeframes
+
+================================================================================
+💹 PRICE COLOR DISPLAY COMPONENT
+================================================================================
+The current price in the chart header changes color based on tick movement.
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+  PriceDisplay Component (CandlestickChart.tsx):
+  
+  - Uses useRef to track previous price value
+  - Compares current price to previous on each update
+  - Updates color state accordingly:
+    - GREEN (text-green-400): price went UP
+    - RED (text-red-400): price went DOWN
+    - Keeps previous color if price unchanged
+
+                    ┌─────────────────────────┐
+                    │  Previous: $100.50      │
+                    │  Current:  $100.75      │
+                    │  Result:   GREEN ▲      │
+                    └─────────────────────────┘
+
+  This gives immediate visual feedback to the user about price direction
+  without needing to watch the chart closely.
+
+--------------------------------------------------------------------------------
+IMPLEMENTATION
+--------------------------------------------------------------------------------
+
+  const PriceDisplay = memo(({ price }) => {
+    const [priceColor, setPriceColor] = useState('white');
+    const prevPriceRef = useRef(null);
+    
+    useEffect(() => {
+      if (prevPriceRef.current !== null) {
+        if (price > prevPriceRef.current) {
+          setPriceColor('green');
+        } else if (price < prevPriceRef.current) {
+          setPriceColor('red');
+        }
+        // If equal, keep previous color
+      }
+      prevPriceRef.current = price;
+    }, [price]);
+    
+    return <span className={colorClass}>${price.toFixed(2)}</span>;
+  });
+
+================================================================================
+⚡ NEWS SHOCK / MARKET EVENT SIMULATION
+================================================================================
+Simulates sudden market-moving events like earnings announcements, Fed decisions,
+or breaking news that cause rapid price movements.
+
+--------------------------------------------------------------------------------
+CONCEPT
+--------------------------------------------------------------------------------
+
+In real markets, prices don't always move gradually. Sometimes:
+  - A company announces surprising earnings → stock gaps up 10%
+  - Fed raises rates unexpectedly → market drops instantly
+  - Breaking news hits → volatility spikes
+
+News Shock simulates these sudden, dramatic price movements.
+
+--------------------------------------------------------------------------------
+HOW IT WORKS
+--------------------------------------------------------------------------------
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         NEWS SHOCK LIFECYCLE                                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   READY STATE            ACTIVE WINDOW           COOLDOWN PERIOD             │
+│   ────────────           ─────────────           ───────────────             │
+│   Button: Gray           Button: Amber           Button: Disabled            │
+│   Badge: "OFF"           Badge: "4s"→"3s"...     Badge: "18s"→"17s"...       │
+│   Clickable: Yes         Clickable: No           Clickable: No               │
+│                                                                              │
+│          │                    │                        │                     │
+│          ▼                    ▼                        ▼                     │
+│      ┌───────┐           ┌─────────┐              ┌─────────┐               │
+│      │ Click │──────────▶│ 5 sec   │─────────────▶│ 20 sec  │───▶ READY     │
+│      │       │           │ Active  │              │Cooldown │               │
+│      └───────┘           └─────────┘              └─────────┘               │
+│                               │                                              │
+│                               ▼                                              │
+│                    3% chance per tick (10/sec)                               │
+│                    = ~1.5 shocks per activation                              │
+│                               │                                              │
+│                               ▼                                              │
+│                    SHOCK! Price moves 6-12x normal                           │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+SHOCK PARAMETERS
+--------------------------------------------------------------------------------
+
+  Parameter              │ Value         │ Description
+  ───────────────────────┼───────────────┼────────────────────────────────────
+  Active Window          │ 5 seconds     │ Duration shocks can occur
+  Cooldown Period        │ 20 seconds    │ Wait before next activation
+  Trigger Probability    │ 3% per tick   │ ~1.5 shocks per 5s window
+  Min Gap Between Shocks │ 2 seconds     │ Prevents back-to-back shocks
+  Shock Multiplier       │ 6-12x         │ Price move size vs normal
+  Direction              │ 50/50         │ Equally likely up or down
+
+--------------------------------------------------------------------------------
+SHOCK MAGNITUDE COMPARISON
+--------------------------------------------------------------------------------
+
+  Scenario                │ Move Size  │ Example ($100 stock)
+  ────────────────────────┼────────────┼──────────────────────────
+  Normal tick             │ 0.04%      │ $100.00 → $100.04
+  EXTREME intensity       │ 0.064%     │ $100.00 → $100.06
+  NEWS SHOCK (min)        │ 0.24%      │ $100.00 → $100.24
+  NEWS SHOCK (max)        │ 0.48%      │ $100.00 → $100.48
+  NEWS SHOCK (average)    │ 0.36%      │ $100.00 → $100.36
+
+RELATIVE IMPACT:
+  - News Shock is 6-12x larger than normal movement
+  - Even at EXTREME intensity (1.6x), shock is 3.75-7.5x more impactful
+  - Shocks are designed to be UNMISTAKABLY VISIBLE on the chart
+
+--------------------------------------------------------------------------------
+SERVER-SIDE STATE
+--------------------------------------------------------------------------------
+
+  // In createSimulationState()
+  newsShockEnabled: false,      // Is shock mode active?
+  newsShockActiveUntil: 0,      // Timestamp when 5s window ends
+  newsShockCooldownUntil: 0,    // Timestamp when 20s cooldown ends
+  ticksSinceLastShock: 0,       // Prevents rapid consecutive shocks
+  newsShockTimerId: null,       // Timer for auto-disable
+
+--------------------------------------------------------------------------------
+FRONTEND STATE (MarketStats)
+--------------------------------------------------------------------------------
+
+  newsShockEnabled: boolean,           // Is active?
+  newsShockCooldown: boolean,          // In cooldown?
+  newsShockCooldownRemaining: number,  // Seconds until clickable
+  newsShockActiveRemaining: number,    // Seconds until auto-disable
+
+--------------------------------------------------------------------------------
+WHY SERVER-SIDE ENFORCEMENT?
+--------------------------------------------------------------------------------
+
+The cooldown is enforced on the SERVER, not the client, because:
+
+  1. SECURITY: Client can't cheat by modifying JavaScript
+  2. CONSISTENCY: All clients see same behavior
+  3. SYNC: Server timer is authoritative
+  4. FAIRNESS: In multi-user scenarios, can't spam shocks
+
+If client sends newsShock=true during cooldown, server rejects it silently.
+
+================================================================================
+CONNECTION TRACKING & LOGGING SYSTEM
+================================================================================
+Comprehensive monitoring of all WebSocket connections.
+
+--------------------------------------------------------------------------------
+WHAT WE TRACK (Per Connection)
+--------------------------------------------------------------------------------
+
+  Metric              | Description                      | Example
+  --------------------|----------------------------------|------------------
+  Session ID          | Unique identifier                | Session 1, 2, 3...
+  IP Address          | Client's network address         | 192.168.1.105
+  User-Agent          | Browser/device information       | Chrome/144.0...
+  Connected At        | Timestamp of connection          | 2026-01-18T14:03Z
+  Duration            | How long connected               | 5m 32s
+  Bytes Sent          | Data sent TO client              | 2.4 MB
+  Bytes Received      | Data received FROM client        | 1.2 KB
+  Messages Sent       | Count of messages TO client      | 15,432
+  Messages Received   | Count of messages FROM client    | 12
+
+--------------------------------------------------------------------------------
+GLOBAL METRICS (Server-Wide)
+--------------------------------------------------------------------------------
+
+  connectionMetrics = {
+    totalConnections     // All-time connection count
+    activeConnections    // Currently connected clients
+    totalBytesSent       // All-time bytes sent
+    totalBytesReceived   // All-time bytes received
+    totalMessagesIn      // All-time messages received
+    totalMessagesOut     // All-time messages sent
+    serverStartTime      // When server started
+  }
+
+--------------------------------------------------------------------------------
+LOG FILE FORMAT (connection_log.txt)
+--------------------------------------------------------------------------------
+
+CONNECT Event:
+  [2026-01-18T14:03:29Z] CONNECT  | Session 1 | IP: 192.168.1.105 | 
+                         User-Agent: Mozilla/5.0 (Windows NT 10.0...)
+
+DISCONNECT Event:
+  [2026-01-18T14:08:45Z] DISCONNECT | Session 1 | IP: 192.168.1.105 | 
+                         Duration: 5m 16s | Sent: 2.4 MB (15432 msgs) | 
+                         Recv: 1.2 KB (12 msgs)
+
+SUMMARY Event (every 5 minutes):
+  [2026-01-18T14:10:00Z] SUMMARY  | Active: 3 | Total: 7 | Uptime: 1h 23m
+
+SHUTDOWN Event:
+  [2026-01-18T16:00:00Z] SHUTDOWN | Final Stats: Total Connections: 42 | 
+                         Sent: 156.7 MB | Recv: 52.3 KB | Uptime: 3h 12m
+
+--------------------------------------------------------------------------------
+IP ADDRESS TYPES
+--------------------------------------------------------------------------------
+
+  Address         | Protocol | Meaning
+  ----------------|----------|--------------------------------------
+  ::1             | IPv6     | Localhost (your own computer)
+  127.0.0.1       | IPv4     | Localhost (your own computer)
+  192.168.x.x     | IPv4     | Local network (LAN) device
+  10.x.x.x        | IPv4     | Local network (LAN) device
+  172.16-31.x.x   | IPv4     | Local network (LAN) device
+  Other           | IPv4/v6  | Internet/external connection
+
+--------------------------------------------------------------------------------
+CONNECTING FROM MOBILE (Same WiFi)
+--------------------------------------------------------------------------------
+
+1. Find your PC's local IP:
+   > ipconfig
+   Look for "IPv4 Address" under WiFi adapter: 192.168.1.xxx
+
+2. Start frontend with --host flag:
+   > npm run dev -- --host
+   This exposes Vite to the network (not just localhost)
+
+3. On mobile browser, navigate to:
+   http://192.168.1.xxx:5173
+
+4. The WebSocket connection needs the same IP:
+   Frontend code should use: ws://192.168.1.xxx:8080
+
+5. Firewall: May need to allow Node.js through Windows Firewall
+
+================================================================================
+CONCURRENT CONNECTION LIMITS & PERFORMANCE
+================================================================================
+Understanding how many simultaneous clients our server can handle.
+
+--------------------------------------------------------------------------------
+THEORETICAL LIMITS
+--------------------------------------------------------------------------------
+
+  Factor               | Limit        | Notes
+  ---------------------|--------------|----------------------------------
+  Node.js ws library   | 65,000+      | Very efficient, event-driven
+  OS File Descriptors  | 1,024 default| Can be increased (ulimit)
+  TCP Ports            | 65,535       | OS limit, rarely reached
+  V8 Heap Memory       | ~1.7 GB      | Default Node.js limit
+
+--------------------------------------------------------------------------------
+MEMORY USAGE PER CONNECTION
+--------------------------------------------------------------------------------
+
+Each connected client allocates:
+
+  Component                   | Memory      | Notes
+  ----------------------------|-------------|---------------------------
+  WebSocket Buffers           | ~64 KB      | Send/receive buffers
+  Simulation State            | ~10 KB      | Prices, settings, counters
+  Order Book (15 bids/asks)   | ~5 KB       | Regenerated each tick
+  Price History (100 ticks)   | ~8 KB       | For tick chart
+  Candle Cache (5 timeframes) | ~100 KB     | 500 candles x 5 values each
+  Trade History               | ~5 KB       | Recent trades list
+  Connection Tracking         | ~2 KB       | Metrics, timestamps
+  ----------------------------|-------------|---------------------------
+  TOTAL PER CONNECTION        | ~200 KB     | Approximately
+
+--------------------------------------------------------------------------------
+PRACTICAL CAPACITY ESTIMATES
+--------------------------------------------------------------------------------
+
+  Available RAM  | Max Connections | With Safety Margin (50%)
+  ---------------|-----------------|---------------------------
+  512 MB         | ~2,500          | ~1,250 safe
+  1 GB           | ~5,000          | ~2,500 safe
+  2 GB           | ~10,000         | ~5,000 safe
+  4 GB           | ~20,000         | ~10,000 safe
+  8 GB           | ~40,000         | ~20,000 safe
+
+--------------------------------------------------------------------------------
+CPU BOTTLENECK (The Real Limit)
+--------------------------------------------------------------------------------
+
+Memory is NOT our main constraint - CPU is!
+
+Each connection runs a setInterval every 100ms doing:
+  +-------------------------------------------------------------+
+  |  Every 100ms per connection:                                |
+  |  +-- updatePrice()          - Price calculation             |
+  |  +-- generateOrderBook()    - 30 price levels               |
+  |  +-- generateTrades()       - Random trade generation       |
+  |  +-- updateCandles()        - 5 timeframe candle updates    |
+  |  +-- JSON.stringify() x5    - Serialize all messages        |
+  |  +-- ws.send() x5           - Network transmission          |
+  +-------------------------------------------------------------+
+
+Node.js is SINGLE-THREADED, so all connections share ONE CPU core.
+
+--------------------------------------------------------------------------------
+REALISTIC PERFORMANCE (Typical Desktop PC)
+--------------------------------------------------------------------------------
+
+  Connections    | CPU Usage  | Latency    | Quality
+  ---------------|------------|------------|----------------------
+  1-10           | < 5%       | < 1ms      | Excellent
+  10-50          | 5-20%      | 1-5ms      | Great
+  50-100         | 20-40%     | 5-20ms     | Good
+  100-200        | 40-70%     | 20-50ms    | Acceptable
+  200-500        | 70-90%     | 50-200ms   | Degraded (warning)
+  500+           | 100%       | 200ms+     | Overloaded (bad)
+
+RECOMMENDED: Stay under 100 connections for smooth real-time updates.
+
+--------------------------------------------------------------------------------
+OPTIMIZATIONS FOR HIGHER CAPACITY
+--------------------------------------------------------------------------------
+
+If you need MORE connections, consider:
+
+1. REDUCE UPDATE FREQUENCY
+   Change setInterval from 100ms to 250ms or 500ms
+   Result: 2-5x more capacity, slightly less smooth animation
+
+2. BATCH MESSAGES
+   Combine orderbook + trades + stats into single message
+   Result: Fewer JSON.stringify() calls, less overhead
+
+3. CLUSTER MODE (Multiple Processes)
+   Use Node.js cluster to spawn worker processes
+   Result: Utilize multiple CPU cores, near-linear scaling
+
+4. SHARED STATE (Redis/Memory)
+   Single simulation, multiple workers broadcast
+   Result: All clients see same market, much more efficient
+
+5. WORKER THREADS
+   Move simulation logic to worker threads
+   Result: Parallel processing, main thread handles I/O only
+
+--------------------------------------------------------------------------------
+QUICK CAPACITY TEST
+--------------------------------------------------------------------------------
+
+To test your system's capacity:
+
+1. Open multiple browser tabs to the visualizer
+2. Watch server terminal for CPU/memory warnings
+3. Note when updates become laggy
+4. That's your practical limit!
+
+Or use a load testing tool:
+  > npx wscat -c ws://localhost:8080
+  (Open in multiple terminals to simulate connections)
+
+================================================================================
+PERFORMANCE ANALYSIS & LATENCY OPTIMIZATION
+================================================================================
+Deep dive into performance bottlenecks and how to fix them.
+
+--------------------------------------------------------------------------------
+BACKEND BOTTLENECK #1: Multiple JSON.stringify Per Tick
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  Every 100ms, we send 5 separate messages per connection:
+  
+  sendToClient(ws, { type: 'orderbook', data: ... });  // stringify #1
+  sendToClient(ws, { type: 'stats', data: ... });      // stringify #2
+  sendToClient(ws, { type: 'price', data: ... });      // stringify #3
+  sendToClient(ws, { type: 'candle', data: ... });     // stringify #4
+  sendToClient(ws, { type: 'trade', data: ... });      // stringify #5
+
+WHY IT'S BAD:
+  - JSON.stringify is CPU-intensive (string allocation, escaping)
+  - 5 calls = 5x the work
+  - Each ws.send() has overhead (framing, buffering)
+  - At 100 connections: 500 stringify calls per 100ms = 5000/sec
+
+THE FIX - Message Batching:
+  
+  // Instead of 5 messages, send 1:
+  sendToClient(ws, {
+    type: 'tick',
+    data: {
+      orderbook: orderBookData,
+      stats: statsData,
+      price: priceData,
+      candle: candleData,    // Only if completed
+      trade: tradeData       // Only if generated
+    }
+  });
+
+EXPECTED IMPROVEMENT:
+  - 80% reduction in stringify calls
+  - 60% reduction in network overhead (fewer frames)
+  - ~2-3ms saved per tick at scale
+
+--------------------------------------------------------------------------------
+BACKEND BOTTLENECK #2: Synchronous File I/O
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  fs.appendFileSync(CONNECTION_LOG_FILE, logEntry);
+  
+  This BLOCKS the entire event loop until disk write completes!
+
+WHY IT'S BAD:
+  - Disk I/O can take 1-50ms depending on system load
+  - ALL connections wait while one log is written
+  - Under load, logging can become the biggest bottleneck
+
+THE FIX - Async with Buffering:
+  
+  // Buffer for log entries
+  const logBuffer = [];
+  
+  function logConnection(event, data) {
+    logBuffer.push(formatLogEntry(event, data));
+  }
+  
+  // Flush every second (not every log)
+  setInterval(() => {
+    if (logBuffer.length > 0) {
+      const entries = logBuffer.splice(0, logBuffer.length);
+      fs.appendFile(CONNECTION_LOG_FILE, entries.join(''), (err) => {
+        if (err) console.error('Log write failed:', err);
+      });
+    }
+  }, 1000);
+
+EXPECTED IMPROVEMENT:
+  - Zero blocking on event loop
+  - Batched writes = fewer disk operations
+  - 5-50ms saved per log write
+
+--------------------------------------------------------------------------------
+BACKEND BOTTLENECK #3: Per-Connection Timers
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  // Each connection has its own timer loop:
+  function startSimulation(ws, session) {
+    const runLoop = () => {
+      // ... process this session ...
+      session.state.intervalId = setTimeout(runLoop, interval);
+    };
+    runLoop();
+  }
+
+WHY IT'S BAD:
+  - 100 connections = 100 active timers
+  - Timer management overhead in V8
+  - Timers can drift and cluster, causing CPU spikes
+  - No control over execution order
+
+THE FIX - Single Shared Tick Loop:
+  
+  // One master loop for all connections
+  let lastTick = Date.now();
+  
+  function masterLoop() {
+    const now = Date.now();
+    const delta = now - lastTick;
+    lastTick = now;
+    
+    // Process ALL sessions in one iteration
+    sessions.forEach((session, ws) => {
+      if (session.state.running && !session.state.paused) {
+        processSessionTick(ws, session, delta);
+      }
+    });
+    
+    setTimeout(masterLoop, 100);  // Single timer for all
+  }
+  
+  masterLoop();
+
+EXPECTED IMPROVEMENT:
+  - 99% reduction in timer count
+  - More predictable CPU usage
+  - Better cache locality (process sessions sequentially)
+  - Easier to implement rate limiting
+
+--------------------------------------------------------------------------------
+BACKEND BOTTLENECK #4: Order Book Array Allocation
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  function generateOrderBook(state) {
+    const bids = [];  // NEW array every call
+    const asks = [];  // NEW array every call
+    
+    for (let i = 0; i < 15; i++) {
+      bids.push({ price: ..., quantity: ... });  // NEW object
+      asks.push({ price: ..., quantity: ... });  // NEW object
+    }
+    
+    return { bids, asks, ... };
+  }
+
+WHY IT'S BAD:
+  - Creates 32 new objects every 100ms per connection
+  - At 100 connections: 3,200 objects/100ms = 32,000 objects/sec
+  - Garbage collector must clean all these up
+  - GC pauses can cause latency spikes
+
+THE FIX - Object Pooling / In-Place Updates:
+  
+  // Initialize once in session state:
+  state.orderBook = {
+    bids: Array(15).fill(null).map(() => ({ price: 0, quantity: 0 })),
+    asks: Array(15).fill(null).map(() => ({ price: 0, quantity: 0 }))
+  };
+  
+  // Update in-place:
+  function updateOrderBook(state) {
+    const mid = state.currentPrice;
+    
+    for (let i = 0; i < 15; i++) {
+      // Modify existing objects
+      state.orderBook.bids[i].price = mid - spread/2 - (i * 0.05);
+      state.orderBook.bids[i].quantity = generateQuantity();
+      // ... same for asks
+    }
+    
+    return state.orderBook;  // Return same object
+  }
+
+EXPECTED IMPROVEMENT:
+  - 95% reduction in object allocations
+  - Smoother CPU usage (fewer GC pauses)
+  - Better memory locality
+
+--------------------------------------------------------------------------------
+FRONTEND BOTTLENECK #1: Console.log in Hot Path
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    console.log('WebSocket message received:', message.type, message);
+    // ... handle message
+  };
+
+WHY IT'S BAD:
+  - console.log is surprisingly slow (string formatting, DevTools sync)
+  - At 10 messages/sec: constant DevTools updates
+  - Logging entire message object is expensive (deep serialization)
+  - DevTools can become unresponsive
+
+THE FIX - Conditional/No Logging:
+  
+  // Option 1: Remove entirely in production
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    // No logging - fastest
+    handleMessage(message);
+  };
+  
+  // Option 2: Debug flag
+  const DEBUG = import.meta.env.DEV;
+  
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if (DEBUG) console.log('WS:', message.type);
+    handleMessage(message);
+  };
+
+EXPECTED IMPROVEMENT:
+  - 5-20ms saved per message in DevTools open
+  - Smoother UI when debugging
+  - Smaller memory footprint (no retained log strings)
+
+--------------------------------------------------------------------------------
+FRONTEND BOTTLENECK #2: Multiple setState Calls
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  ws.onmessage = (event) => {
+    switch (message.type) {
+      case 'orderbook':
+        setOrderBook(message.data);      // Re-render #1
+        break;
+      case 'stats':
+        setStats(message.data);          // Re-render #2
+        break;
+      case 'price':
+        setPriceHistory(prev => ...);    // Re-render #3
+        setCurrentCandles(prev => ...);  // Re-render #4
+        break;
+    }
+  };
+
+WHY IT'S BAD:
+  - React 18 batches in event handlers, BUT not in async callbacks
+  - WebSocket onmessage is async context
+  - Each setState can trigger a re-render
+  - 4-5 re-renders per tick = 40-50 per second
+
+THE FIX - Manual Batching with unstable_batchedUpdates:
+  
+  import { unstable_batchedUpdates } from 'react-dom';
+  
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    
+    if (message.type === 'tick') {
+      unstable_batchedUpdates(() => {
+        setOrderBook(message.data.orderbook);
+        setStats(message.data.stats);
+        setPriceHistory(prev => [...prev, message.data.price]);
+        setCurrentCandles(prev => updateCandles(prev, message.data.price));
+      });
+      // All updates batched into ONE re-render
+    }
+  };
+
+ALTERNATIVE - useReducer:
+  
+  const [state, dispatch] = useReducer(marketReducer, initialState);
+  
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    dispatch({ type: 'TICK', payload: message.data });
+    // Single dispatch = single re-render
+  };
+
+EXPECTED IMPROVEMENT:
+  - 75% reduction in re-renders
+  - Smoother UI updates
+  - Less CPU usage in React reconciliation
+
+--------------------------------------------------------------------------------
+FRONTEND BOTTLENECK #3: Duplicate Candle Calculation
+--------------------------------------------------------------------------------
+
+CURRENT PROBLEM:
+  // Server calculates candles:
+  function updateCandles(state, price, volume, timestamp) { ... }
+  
+  // Client ALSO calculates candles:
+  case 'price':
+    setCurrentCandles(prev => {
+      for (const tf of [1, 5, 30, 60, 300]) {
+        // Same logic as server!
+        const tfMs = tf * 1000;
+        const periodStart = Math.floor(timestamp / tfMs) * tfMs;
+        // ... update candle
+      }
+    });
+
+WHY IT'S BAD:
+  - Duplicated CPU work
+  - Can cause client/server candle drift
+  - 5 timeframes × loop iterations = wasted cycles
+
+THE FIX - Trust Server Candles Only:
+  
+  // Server sends current candle state in tick message:
+  sendToClient(ws, {
+    type: 'tick',
+    data: {
+      price: { timestamp, price, volume },
+      currentCandles: state.currentCandles  // Pre-calculated!
+    }
+  });
+  
+  // Client just uses it:
+  case 'tick':
+    setPriceHistory(prev => [...prev, message.data.price]);
+    setCurrentCandles(message.data.currentCandles);  // No calculation!
+
+EXPECTED IMPROVEMENT:
+  - Remove ~100 operations per tick
+  - Perfect candle sync (no drift)
+  - Simpler client code
+
+--------------------------------------------------------------------------------
+PERFORMANCE OPTIMIZATION PRIORITY ORDER
+--------------------------------------------------------------------------------
+
+  Priority | Task              | Impact    | Effort | ROI
+  ---------|-------------------|-----------|--------|--------
+  1        | Message Batching  | HIGH      | Medium | Best
+  2        | Remove console.log| HIGH      | Low    | Excellent
+  3        | Async Logging     | MEDIUM    | Low    | Great
+  4        | State Batching    | MEDIUM    | Medium | Good
+  5        | Shared Tick Loop  | HIGH      | High   | Good at scale
+  6        | Object Pooling    | LOW-MED   | Medium | Moderate
+  7        | Remove Dup Candles| LOW       | Low    | Easy win
+
+START WITH #1 and #2 for biggest immediate improvement!
+
+--------------------------------------------------------------------------------
+MEASURING LATENCY
+--------------------------------------------------------------------------------
+
+To measure actual latency improvements:
+
+  // Server-side: Add timestamp to messages
+  sendToClient(ws, {
+    type: 'tick',
+    serverTime: Date.now(),
+    data: { ... }
+  });
+  
+  // Client-side: Measure round-trip
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    const latency = Date.now() - message.serverTime;
+    console.log(`Latency: ${latency}ms`);
+  };
+
+TARGET LATENCIES:
+  - Excellent: < 5ms
+  - Good: 5-20ms
+  - Acceptable: 20-50ms
+  - Needs work: 50-100ms
+  - Problem: > 100ms
+
+================================================================================
+END OF KNOWLEDGE BASE
+================================================================================

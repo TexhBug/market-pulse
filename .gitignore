@@ -1,0 +1,45 @@
+# Build outputs
+build/
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+frontend/.env
+frontend/.env.local
+
+# Logs
+*.log
+prices.txt
+connection_log.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Frontend build
+frontend/dist/
+
+# Package manager locks (optional - some prefer to commit these)
+# package-lock.json
+# yarn.lock
+
+# Temporary files
+*.tmp
+*.temp

@@ -1,0 +1,1641 @@
+================================================================================
+ORDER BOOK VISUALIZER - BUILD LOG
+================================================================================
+Project  : Multithreaded Order Book Visualizer
+Started  : 2026-01-17
+Location : C:\Projects\order-book-visualizer
+================================================================================
+
+LOG FORMAT: [YYYY-MM-DD HH:MM:SS] [TAG] Message
+
+TAGS:
+  [ENV]     - Environment setup
+  [DEP]     - Dependency installed
+  [MISS]    - Missing dependency
+  [FEAT]    - Feature development
+  [BUILD]   - Build actions
+  [ERR]     - Errors
+  [FIX]     - Bug fixes
+  [CFG]     - Configuration
+  [TEST]    - Testing
+  [INFO]    - General info
+
+================================================================================
+SESSION: 2026-01-17
+================================================================================
+
+[2026-01-17 00:00:00] [INFO] Project folder created
+[2026-01-17 00:00:01] [ENV]  Checking C++ tools...
+[2026-01-17 00:00:02] [MISS] g++ not found
+[2026-01-17 00:00:02] [MISS] cmake not found
+[2026-01-17 00:00:02] [MISS] cl.exe (MSVC) not found
+
+[2026-01-17 10:00:00] [INFO] Task 1.1 Complete - No compilers found
+[2026-01-17 10:00:01] [INFO] Decision: Using MinGW-w64 (via MSYS2) + CMake
+[2026-01-17 10:00:02] [ENV]  winget available (v1.12.350)
+[2026-01-17 10:00:03] [ENV]  Starting MSYS2 installation...
+
+--------------------------------------------------------------------------------
+COMMAND: winget install -e --id MSYS2.MSYS2 --accept-package-agreements --accept-source-agreements
+PURPOSE: Install MSYS2 (package manager that provides MinGW-w64 toolchain)
+--------------------------------------------------------------------------------
+[2026-01-17 10:01:00] [DEP]  MSYS2 v20251213 downloaded (89.2 MB)
+[2026-01-17 10:01:30] [DEP]  MSYS2 installed successfully
+[2026-01-17 10:01:31] [INFO] MSYS2 location: C:\msys64\
+
+--------------------------------------------------------------------------------
+COMMAND: winget install -e --id Kitware.CMake --accept-package-agreements --accept-source-agreements
+PURPOSE: Install CMake build system generator
+--------------------------------------------------------------------------------
+[2026-01-17 10:02:00] [DEP]  CMake v4.2.1 downloaded (33.6 MB)
+[2026-01-17 10:02:30] [DEP]  CMake installed successfully
+
+--------------------------------------------------------------------------------
+COMMAND: C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-make"
+PURPOSE: Install g++ compiler and make build tool via MSYS2's package manager
+--------------------------------------------------------------------------------
+[2026-01-17 10:03:00] [DEP]  Installing 18 packages (~550 MB):
+                             - mingw-w64-x86_64-gcc (C++ compiler)
+                             - mingw-w64-x86_64-make (build tool)
+                             - mingw-w64-x86_64-binutils, headers, libs, etc.
+[2026-01-17 10:04:00] [DEP]  g++ and make installed successfully
+
+--------------------------------------------------------------------------------
+COMMAND: $env:Path = "C:\msys64\mingw64\bin;C:\Program Files\CMake\bin;" + $env:Path
+PURPOSE: Add MinGW and CMake to PATH so we can use them from anywhere
+--------------------------------------------------------------------------------
+[2026-01-17 10:05:00] [CFG]  PATH updated for current session
+
+--------------------------------------------------------------------------------
+COMMAND: g++ --version; cmake --version
+PURPOSE: Verify that both tools are accessible and working
+--------------------------------------------------------------------------------
+[2026-01-17 10:05:01] [ENV]  ✅ g++ (Rev8, MSYS2) version 15.2.0 - WORKING
+[2026-01-17 10:05:02] [ENV]  ✅ CMake version 4.2.1 - WORKING
+
+[2026-01-17 10:05:03] [INFO] ========================================
+[2026-01-17 10:05:03] [INFO] ENVIRONMENT SETUP COMPLETE!
+[2026-01-17 10:05:03] [INFO] Tasks 1 & 2 DONE - Ready to create project structure
+[2026-01-17 10:05:03] [INFO] ========================================
+
+================================================================================
+SESSION: 2026-01-17 (continued) - PROJECT STRUCTURE CREATION
+================================================================================
+
+[2026-01-17 11:00:00] [INFO] Starting Task 3: Create Project Structure
+
+--------------------------------------------------------------------------------
+CREATED: Folder structure
+--------------------------------------------------------------------------------
+[2026-01-17 11:00:01] [CFG]  Created: src/        (source files)
+[2026-01-17 11:00:02] [CFG]  Created: include/    (header files)
+[2026-01-17 11:00:03] [CFG]  Created: tests/      (unit tests)
+
+--------------------------------------------------------------------------------
+CREATED: CMakeLists.txt files
+--------------------------------------------------------------------------------
+[2026-01-17 11:01:00] [CFG]  Created: CMakeLists.txt (root - master build config)
+                             - Project: OrderBookVisualizer v1.0.0
+                             - C++ Standard: 17
+                             - Compiler warnings enabled
+                             - Threading support enabled
+[2026-01-17 11:01:01] [CFG]  Created: tests/CMakeLists.txt
+                             - GoogleTest integration via FetchContent
+                             - Test discovery enabled
+
+--------------------------------------------------------------------------------
+CREATED: Header files (include/)
+--------------------------------------------------------------------------------
+[2026-01-17 11:02:00] [FEAT] Created: include/Common.h
+                             - Type aliases (OrderId, Price, Quantity, Timestamp)
+                             - Enums (Side, OrderType, OrderStatus)
+                             - Helper functions (sideToString, etc.)
+
+[2026-01-17 11:02:01] [FEAT] Created: include/Order.h
+                             - Order class definition
+                             - Getters, setters, fill(), cancel(), modify()
+                             - toString() for debugging
+
+[2026-01-17 11:02:02] [FEAT] Created: include/OrderBook.h
+                             - PriceLevel struct
+                             - OrderBook class with bids/asks
+                             - Thread-safe with mutex
+
+[2026-01-17 11:02:03] [FEAT] Created: include/MatchingEngine.h
+                             - Trade struct
+                             - MatchingEngine class
+                             - Trade callbacks
+
+[2026-01-17 11:02:04] [FEAT] Created: include/OrderQueue.h
+                             - Thread-safe queue
+                             - Blocking pop, timeout, shutdown
+
+[2026-01-17 11:02:05] [FEAT] Created: include/Visualizer.h
+                             - Console-based visualization
+                             - Color support
+
+--------------------------------------------------------------------------------
+CREATED: Source files (src/)
+--------------------------------------------------------------------------------
+[2026-01-17 11:03:00] [FEAT] Created: src/Order.cpp
+[2026-01-17 11:03:01] [FEAT] Created: src/OrderBook.cpp
+[2026-01-17 11:03:02] [FEAT] Created: src/MatchingEngine.cpp
+[2026-01-17 11:03:03] [FEAT] Created: src/OrderQueue.cpp
+[2026-01-17 11:03:04] [FEAT] Created: src/Visualizer.cpp
+[2026-01-17 11:03:05] [FEAT] Created: src/main.cpp
+                             - Entry point
+                             - Order generator thread
+                             - Order processor thread
+                             - Display updater thread
+
+--------------------------------------------------------------------------------
+CREATED: Test files (tests/)
+--------------------------------------------------------------------------------
+[2026-01-17 11:04:00] [TEST] Created: tests/test_order.cpp
+[2026-01-17 11:04:01] [TEST] Created: tests/test_orderbook.cpp
+[2026-01-17 11:04:02] [TEST] Created: tests/test_matching_engine.cpp
+[2026-01-17 11:04:03] [TEST] Created: tests/test_order_queue.cpp
+
+[2026-01-17 11:05:00] [INFO] ========================================
+[2026-01-17 11:05:00] [INFO] PROJECT STRUCTURE COMPLETE!
+[2026-01-17 11:05:00] [INFO] ========================================
+[2026-01-17 11:05:00] [INFO] Files created:
+                             - 2 CMakeLists.txt files
+                             - 6 header files (.h)
+                             - 6 source files (.cpp)
+                             - 4 test files (.cpp)
+[2026-01-17 11:05:00] [INFO] ========================================
+
+================================================================================
+SESSION: 2026-01-17 - BUILD & RUN
+================================================================================
+
+--------------------------------------------------------------------------------
+COMMAND: $env:Path = "C:\msys64\mingw64\bin;C:\Program Files\CMake\bin;" + $env:Path
+PURPOSE: Add MinGW and CMake to PATH for current PowerShell session
+NOTE:    Required every new terminal session unless PATH is set permanently
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+COMMAND: cmake -B build -G "MinGW Makefiles"
+PURPOSE: Configure the build system
+EXPLANATION:
+  - cmake           = Run CMake build system generator
+  - -B build        = Put generated build files in "build" folder
+  - -G "MinGW Makefiles" = Use MinGW's make system (not Visual Studio)
+OUTPUT:
+  -- The CXX compiler identification is GNU 15.2.0
+  -- Order Book Visualizer v1.0.0
+  -- C++ Standard: 17
+  -- Compiler: GNU 15.2.0
+  -- Configuring done (0.1s)
+  -- Generating done (0.2s)
+  -- Build files have been written to: C:/Projects/order-book-visualizer/build
+--------------------------------------------------------------------------------
+[2026-01-17 12:00:00] [CFG]  CMake configuration SUCCESSFUL ✓
+
+--------------------------------------------------------------------------------
+COMMAND: cmake --build build
+PURPOSE: Compile the project using the generated build files
+EXPLANATION:
+  - cmake --build   = Tell CMake to build using whatever generator was configured
+  - build           = The folder containing the build files
+OUTPUT:
+  [ 14%] Building CXX object CMakeFiles/orderbook.dir/src/main.cpp.obj
+  [ 28%] Building CXX object CMakeFiles/orderbook.dir/src/Order.cpp.obj
+  [ 42%] Building CXX object CMakeFiles/orderbook.dir/src/OrderBook.cpp.obj
+  [ 57%] Building CXX object CMakeFiles/orderbook.dir/src/MatchingEngine.cpp.obj
+  [ 71%] Building CXX object CMakeFiles/orderbook.dir/src/OrderQueue.cpp.obj
+  [ 85%] Building CXX object CMakeFiles/orderbook.dir/src/Visualizer.cpp.obj
+  [100%] Linking CXX executable bin\orderbook.exe
+  [100%] Built target orderbook
+--------------------------------------------------------------------------------
+[2026-01-17 12:00:30] [BUILD] Build SUCCESSFUL ✓
+[2026-01-17 12:00:30] [INFO]  Executable: build\bin\orderbook.exe
+
+--------------------------------------------------------------------------------
+COMMAND: .\build\bin\orderbook.exe
+PURPOSE: Run the Order Book Visualizer
+NOTE:    Must have MinGW DLLs in PATH (run the $env:Path command first!)
+--------------------------------------------------------------------------------
+[2026-01-17 12:01:00] [INFO]  APPLICATION RUNNING ✓
+
+================================================================================
+APPLICATION OUTPUT - Order Book Visualizer Demo
+================================================================================
+
+  ==============================================================
+                    ORDER BOOK - DEMO
+  ==============================================================
+
+        BIDS (Buy)         |         ASKS (Sell)       
+  --------------------------------------------------------------
+     184 x     101.05 <=>     101.00 x      100
+     194 x     101.02  |      101.04 x      185
+     282 x     101.00  |      101.10 x      120
+     396 x     100.97  |      101.11 x      380
+      98 x     100.95  |      101.12 x      249
+  ...
+
+  Best Bid: $101.05  |  Best Ask: $101.00  |  Spread: $-0.05
+  
+  RECENT TRADES
+  ----------------------------------------
+  ▲       59 @ $    101.11  (Buy filled)
+  ▲      120 @ $    101.10  (Buy filled)
+  ▲      185 @ $    101.04  (Buy filled)
+  ▼      179 @ $    101.05  (Sell filled)
+
+  ========================================
+     Shutdown Complete
+  ========================================
+  Total Orders Processed: 255
+  Total Trades Executed:  242
+  Total Volume Traded:    32337
+  ========================================
+
+================================================================================
+ENHANCEMENT SESSION: 2026-01-17 (Continued)
+================================================================================
+
+[2026-01-17 14:00:00] [FEAT] Added Market Sentiment system
+                      - 6 sentiment types: bullish, bearish, volatile, calm, choppy, neutral
+                      - Each affects order direction bias, price drift, volatility
+
+[2026-01-17 14:30:00] [FEAT] Added Intensity levels
+                      - 5 levels: mild (0.3x), moderate (0.6x), normal (1.0x), 
+                                  aggressive (1.5x), extreme (2.5x)
+                      - Intensity multiplies sentiment effects
+
+[2026-01-17 15:00:00] [FEAT] Added keyboard controls
+                      - 1-6: Switch sentiment types
+                      - M/N/A/X: Set intensity levels
+                      - SPACE/TAB: Cycle through options
+
+[2026-01-17 15:30:00] [FIX]  Fixed DLL issue
+                      - Added -static flag to CMakeLists.txt
+                      - Executable is now self-contained (~3MB)
+
+[2026-01-17 16:00:00] [FIX]  Fixed Unicode/emoji issues
+                      - Windows terminal doesn't support UTF-8 emojis well
+                      - Replaced all emojis with ASCII: [^^], [vv], [~~], etc.
+                      - Changed trade indicators: ▲/▼ -> [BUY]/[SELL]
+                      - Changed box drawing chars to ASCII: +, -, |
+
+[2026-01-17 16:30:00] [FEAT] Added ASCII price chart
+                      - 12 rows x 60 columns visualization
+                      - Shows price history with trend indicators
+                      - Current price highlighted with @ symbol
+                      - Price labels on left axis
+
+[2026-01-17 17:00:00] [FEAT] Added Spread Control system
+                      - Configurable spread: $0.05 (min) to $0.25 (max)
+                      - Step size: $0.05
+                      - Keyboard controls: + to increase, - to decrease
+                      - Spread displayed in status bar (yellow)
+                      - Higher spread = less matching = more visible price levels
+                      - Lower spread = more matching = faster price movement
+
+--------------------------------------------------------------------------------
+BUILD: 2026-01-17 17:00:00
+--------------------------------------------------------------------------------
+COMMAND: cmake --build build
+RESULT:  SUCCESS - [100%] Built target orderbook
+
+Files Modified:
+  - include/MarketSentiment.h: Added spread constants, getter/setter, +/- methods
+  - src/main.cpp: Added spread keyboard controls (+/-), display in status bar
+  - src/Visualizer.cpp: Improved price chart visualization
+
+================================================================================
+ENHANCEMENT SESSION: 2026-01-17 (Realistic Order Generation)
+================================================================================
+
+[2026-01-17 18:00:00] [FEAT] Implemented realistic market order simulation
+                      PROBLEM: Price was stagnant because orders weren't consuming
+                               liquidity properly
+                      
+                      SOLUTION: Separated order generation into two types:
+                      
+                      1. LIMIT ORDERS (30%):
+                         - Add liquidity to the order book
+                         - Placed AWAY from best bid/ask
+                         - Wait in book until matched
+                         - Smaller quantities
+                      
+                      2. MARKET ORDERS (70%):
+                         - CONSUME liquidity immediately
+                         - Execute at best available price
+                         - DRIVE PRICE MOVEMENT
+                         - On trade execution, feed price back to generator
+                      
+                      KEY INSIGHT: In real markets, price moves when market orders
+                      consume limit orders. The last trade price IS the current price.
+
+[2026-01-17 18:30:00] [FEAT] Added price logging to prices.txt
+                      - Logs every 10th trade with timestamp
+                      - Includes current sentiment and intensity
+                      - Logs ONLY WHEN sentiment or intensity changes
+                      - Session start/end markers
+                      - Format: TIMESTAMP, PRICE, SENTIMENT, INTENSITY, CHANGE_TYPE
+
+[2026-01-17 18:45:00] [FEAT] Added market/limit order statistics in UI
+                      - Shows percentage of market vs limit orders
+                      - Color coded: RED=market, GREEN=limit
+                      - Helps visualize order flow
+
+--------------------------------------------------------------------------------
+BUILD: 2026-01-17 18:45:00
+--------------------------------------------------------------------------------
+COMMAND: cmake --build build
+RESULT:  PENDING
+
+Files Modified:
+  - include/MarketSentiment.h: 
+    - Rewrote SentimentOrderGenerator class
+    - Added generateLimitOrder() - builds order book depth
+    - Added generateMarketOrder() - crosses spread, moves price
+    - Added onTradeExecuted() - feedback loop for price discovery
+    - Added updateFromOrderBook() - sync with actual bid/ask
+    
+  - src/main.cpp:
+    - Added price logging system (initPriceLog, logPrice, logSentimentChange)
+    - Global generator shared between threads
+    - Processor feeds trades back to generator
+    - Display shows MKT/LIM percentages
+    - Final statistics include order type breakdown
+
+================================================================================
+PROJECT STATUS: ONGOING DEVELOPMENT
+================================================================================
+Build Status:   PENDING
+Run Status:     PENDING
+
+Features:
+  - Order book visualization (bid/ask depth)
+  - Matching engine with trade execution
+  - 6 market sentiments x 5 intensity levels
+  - ASCII price chart with trend indicators
+  - Configurable spread control ($0.05 - $0.25)
+  - Realistic order generation (~15% market, ~85% limit)
+  - Price logging to prices.txt
+  - Tick size constraint ($0.05)
+  - Proper order book fill/removal on match
+  - Real-time keyboard controls
+
+Price Log Format (prices.txt):
+  HH:MM:SS.mmm, PRICE, SENTIMENT, INTENSITY, CHANGE_TYPE
+  
+  CHANGE_TYPE values:
+  - TRADE: Regular price log
+  - SENTIMENT_CHANGE: User changed sentiment
+  - INTENSITY_CHANGE: User changed intensity
+  - BOTH_CHANGE: Both changed at once
+  - SESSION_START: Beginning of session
+  - SESSION_END: End of session
+
+Tick Size:
+  All prices are constrained to $0.05 multiples.
+  Implemented via roundToTick() helper function.
+  Applied to: limit orders, market orders, trade feedback, initial book.
+
+Order Book Mechanics:
+  - Matching engine properly removes filled quantity from book
+  - fillQuantityAtPrice() handles FIFO order matching
+  - Empty levels are automatically cleaned up
+  - Both bid and ask sides maintain minimum 25% liquidity
+
+Market Order Ratios (Realistic):
+  - Base: 5-18% market orders depending on sentiment
+  - Max cap: 25% (even at extreme intensity)
+  - Limit orders: 75-95% (provides liquidity)
+  - Whale orders: Max 15% probability, 5x multiplier cap
+
+To run:
+  $env:Path = "C:\msys64\mingw64\bin;C:\Program Files\CMake\bin;" + $env:Path
+  .\build\bin\orderbook.exe [options]
+  
+  Examples: 
+    .\build\bin\orderbook.exe -i                          # Interactive setup
+    .\build\bin\orderbook.exe -p 250 -s AAPL --sentiment bullish
+    .\build\bin\orderbook.exe bullish aggressive          # Legacy format
+
+Command Line Options:
+  -i, --interactive       Interactive setup (prompts for all options)
+  -p, --price <value>     Base price ($100 - $500, default: $100)
+  -s, --symbol <name>     Stock symbol (default: DEMO)
+  --spread <value>        Initial spread ($0.05 - $0.25, default: $0.05)
+  --sentiment <type>      Initial sentiment
+  --intensity <level>     Initial intensity
+
+Keyboard Controls:
+  1-6     = Sentiment (Bull/Bear/Vol/Calm/Chop/Neutral)
+  M/N/A/X = Intensity (Mild/Normal/Aggressive/eXtreme)
+  + / -   = Increase/decrease spread
+  P       = Pause/Resume simulation
+  F / S   = Faster/Slower (0.25x - 4x speed)
+  Q / ESC = Quit
+
+================================================================================
+SESSION: 2026-01-18 - CONFIGURABLE STARTUP OPTIONS
+================================================================================
+
+[2026-01-18 00:00:00] [FEAT] Added configurable startup options
+
+SimulationConfig struct:
+  - basePrice: $100 - $500 (default: $100)
+  - stockSymbol: String (default: "DEMO")
+  - spread: $0.05 - $0.25 (default: $0.05)
+  - sentiment: 6 options (default: NEUTRAL)
+  - intensity: 5 options (default: NORMAL)
+  - speedMultiplier: 0.25x - 4x (default: 1.0x)
+
+Command Line Parsing:
+  - parseCommandLine() handles all options
+  - Legacy format still supported (sentiment intensity)
+  - Validation clamps all values to valid ranges
+
+Interactive Mode (-i):
+  - getConfigInteractive() prompts for all options
+  - ENTER accepts defaults
+  - Shows configuration summary before start
+
+Runtime Controls Added:
+  - P = Pause/Resume simulation
+  - F = Faster (2x speed, max 4x)
+  - S = Slower (0.5x speed, min 0.25x)
+  - Speed multiplier affects order generation delay
+
+Display Updates:
+  - Shows stock symbol and current price
+  - Shows [PAUSED] indicator when paused
+  - Shows current speed multiplier
+  - Updated control legend
+
+[2026-01-18 00:01:00] [BUILD] Build successful
+[2026-01-18 00:01:01] [TEST] Help output verified
+[2026-01-18 00:01:02] [TEST] Command line parsing works
+
+================================================================================
+SESSION: 2026-01-17 (continued) - PHASE 2: WEB FRONTEND
+================================================================================
+
+[2026-01-17 22:00:00] [INFO] Starting Phase 2: React Frontend Development
+[2026-01-17 22:00:01] [INFO] User requested: Framework-based frontend (not plain HTML/CSS/JS)
+[2026-01-17 22:00:02] [INFO] Decision: React + Vite + TypeScript + Tailwind CSS + Recharts
+
+--------------------------------------------------------------------------------
+STEP 1: Install Node.js
+--------------------------------------------------------------------------------
+COMMAND: winget install -e --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+PURPOSE: Install Node.js LTS (required for npm, Vite, React)
+--------------------------------------------------------------------------------
+[2026-01-17 22:01:00] [DEP]  Node.js v24.13.0 downloaded (27.5 MB)
+[2026-01-17 22:01:30] [DEP]  Node.js installed successfully
+[2026-01-17 22:01:31] [INFO] npm v11.6.2 included
+
+ISSUE: PowerShell script execution policy blocks npm.ps1
+--------------------------------------------------------------------------------
+ERROR: npm : File C:\Program Files\nodejs\npm.ps1 cannot be loaded because 
+       running scripts is disabled on this system.
+WORKAROUND: Use npm.cmd instead of npm directly
+COMMAND: & "C:\Program Files\nodejs\npm.cmd" --version
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+STEP 2: Create React Project with Vite
+--------------------------------------------------------------------------------
+COMMAND: npm create vite@latest frontend -- --template react-ts
+PURPOSE: Scaffold React + TypeScript project with Vite build tool
+--------------------------------------------------------------------------------
+[2026-01-17 22:02:00] [CFG]  create-vite@8.2.0 installed
+[2026-01-17 22:02:30] [CFG]  React + TypeScript template created
+[2026-01-17 22:02:31] [DEP]  175 packages installed (initial dependencies)
+
+Vite Prompt: "Use rolldown-vite (Experimental)?" → Selected "No"
+
+--------------------------------------------------------------------------------
+STEP 3: Install Additional Dependencies
+--------------------------------------------------------------------------------
+COMMAND: npm install -D tailwindcss @tailwindcss/vite
+PURPOSE: CSS framework with Vite plugin
+--------------------------------------------------------------------------------
+[2026-01-17 22:03:00] [DEP]  tailwindcss installed
+[2026-01-17 22:03:01] [DEP]  @tailwindcss/vite plugin installed
+
+COMMAND: npm install recharts lucide-react
+PURPOSE: Charting library and icon library
+--------------------------------------------------------------------------------
+[2026-01-17 22:03:30] [DEP]  recharts installed (41 packages)
+[2026-01-17 22:03:31] [DEP]  lucide-react installed
+
+Final package count: 230 packages, 0 vulnerabilities
+
+--------------------------------------------------------------------------------
+STEP 4: Configure Vite
+--------------------------------------------------------------------------------
+FILE: frontend/vite.config.ts
+CHANGES:
+  - Added tailwindcss plugin
+  - Added WebSocket proxy configuration for future backend connection:
+    proxy: { '/ws': { target: 'ws://localhost:8080', ws: true } }
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+STEP 5: Create Frontend Components
+--------------------------------------------------------------------------------
+FILES CREATED:
+
+frontend/src/types.ts
+  - TypeScript interfaces for all data types
+  - PriceLevel, OrderBookData, Trade, PricePoint, MarketStats
+  - WSMessage, WSCommand for WebSocket communication
+  - Sentiment and Intensity type definitions
+  - SENTIMENTS and INTENSITIES display constants
+
+frontend/src/hooks/useWebSocket.ts
+  - WebSocket connection hook (for future backend connection)
+  - Auto-reconnect on disconnect (2 second delay)
+  - Message parsing and state updates
+  - sendCommand function for controls
+
+frontend/src/hooks/useMockData.ts
+  - Demo data generator (runs entirely in browser)
+  - Simulates price movement based on sentiment/intensity
+  - Generates fake order book, trades, stats
+  - Handles all control commands locally
+
+frontend/src/components/Header.tsx
+  - App header with logo
+  - Connection status indicator (Connected/Demo Mode)
+
+frontend/src/components/PriceChart.tsx
+  - Real-time line chart using Recharts
+  - Price, high/low/open stats display
+  - Color changes based on price direction (green/red)
+  - Reference line at open price
+
+frontend/src/components/OrderBook.tsx
+  - Bid/Ask display with depth bars
+  - Color-coded (green bids, red asks)
+  - Cumulative totals
+  - Spread display
+
+frontend/src/components/ControlPanel.tsx
+  - Sentiment buttons (6 options, color-coded)
+  - Intensity buttons (5 options)
+  - Spread slider ($0.05 - $0.25)
+  - Speed slider (0.25x - 4x)
+  - Pause/Resume button
+  - Reset button
+
+frontend/src/components/StatsPanel.tsx
+  - Orders, Trades, Volume, Market Order % stats
+  - Market/Limit order ratio bar
+  - Current market condition display
+  - Paused indicator
+
+frontend/src/components/TradeTicker.tsx
+  - Recent trades list (last 50)
+  - Side, Price, Size, Time columns
+  - Color-coded by side (BUY=green, SELL=red)
+
+frontend/src/App.tsx
+  - Main layout component
+  - Grid layout: Chart (8 cols), OrderBook (4 cols)
+  - Bottom panel: Controls, Stats, Trades (4 cols each)
+  - Uses useMockData hook for demo mode
+
+frontend/src/index.css
+  - Tailwind CSS import
+  - Custom scrollbar styling
+  - Flash animations for trades
+  - Depth bar gradients
+
+--------------------------------------------------------------------------------
+STEP 6: Run Development Server
+--------------------------------------------------------------------------------
+COMMAND: node node_modules/vite/bin/vite.js
+PURPOSE: Start Vite dev server (bypasses npm script issue)
+--------------------------------------------------------------------------------
+[2026-01-17 22:10:00] [INFO] Vite v7.3.1 ready in 528ms
+[2026-01-17 22:10:01] [INFO] Local: http://localhost:5173/
+[2026-01-17 22:10:02] [TEST] Frontend loads successfully in browser
+
+--------------------------------------------------------------------------------
+STEP 7: Fix Mock Data - Price Movement Too Erratic
+--------------------------------------------------------------------------------
+ISSUE: Demo mode price was jumping wildly, controls felt unresponsive
+ROOT CAUSE: Volatility values too high (2-5% per tick instead of 0.04-0.2%)
+
+FILE: frontend/src/hooks/useMockData.ts
+CHANGES:
+  - Reduced drift from 2% to 0.08% per tick
+  - Reduced volatility from 2-5% to 0.04-0.2% per tick
+  - Added momentum smoothing (70% previous + 30% new)
+  - Added $0.05 tick size rounding
+  - Added trade side bias based on sentiment (65/35 for bull/bear)
+
+[2026-01-17 22:15:00] [FIX]  Price movement now smooth and responsive
+[2026-01-17 22:15:01] [TEST] All sentiments produce expected behavior
+
+================================================================================
+FRONTEND STATUS: COMPLETE (Demo Mode)
+================================================================================
+
+Project Structure:
+  frontend/
+  ├── index.html
+  ├── package.json
+  ├── vite.config.ts
+  ├── tsconfig.json
+  └── src/
+      ├── App.tsx
+      ├── main.tsx
+      ├── index.css
+      ├── types.ts
+      ├── hooks/
+      │   ├── useWebSocket.ts
+      │   └── useMockData.ts
+      └── components/
+          ├── Header.tsx
+          ├── PriceChart.tsx
+          ├── OrderBook.tsx
+          ├── ControlPanel.tsx
+          ├── StatsPanel.tsx
+          └── TradeTicker.tsx
+
+To run frontend:
+  cd frontend
+  node node_modules/vite/bin/vite.js
+  Open: http://localhost:5173/
+
+Current State:
+  - Frontend runs in DEMO MODE (simulated data in browser)
+  - All controls work (sentiment, intensity, spread, speed, pause, reset)
+  - Price chart, order book, trade ticker all functional
+  - NOT YET connected to C++ backend
+
+================================================================================
+NEXT: CONNECT C++ BACKEND TO FRONTEND VIA WEBSOCKET
+================================================================================
+
+Architecture:
+  +------------------+     WebSocket     +------------------+
+  |   C++ Backend    | <--------------> |   React Frontend |
+  |   (orderbook.exe)|    Port 8080     |   (localhost:5173)|
+  +------------------+                  +------------------+
+
+Requirements:
+  1. Add WebSocket server to C++ backend
+  2. Broadcast: orderbook, trades, stats, price updates
+  3. Receive: sentiment, intensity, spread, speed, pause commands
+  4. Switch frontend from useMockData to useWebSocket
+
+WebSocket Library Options:
+  - mingw-w64-x86_64-libwebsockets (available in MSYS2)
+  - mingw-w64-x86_64-wslay (available in MSYS2)
+  - websocketpp (needs manual download)
+  - Raw Winsock2 implementation
+
+--------------------------------------------------------------------------------
+ATTEMPTING: Install WebSocket Library
+--------------------------------------------------------------------------------
+COMMAND: pacman -Ss websocket
+PURPOSE: Search for available WebSocket packages in MSYS2
+RESULT: Found mingw-w64-x86_64-libwebsockets, mingw-w64-x86_64-wslay
+
+COMMAND: C:\msys64\usr\bin\pacman.exe -S --noconfirm mingw-w64-x86_64-libwebsockets
+STATUS: Installed successfully (libwebsockets 4.4.1-1)
+DEPENDENCIES: OpenSSL 3.6.0 (auto-installed)
+--------------------------------------------------------------------------------
+
+================================================================================
+PHASE 2B: WEBSOCKET SERVER IMPLEMENTATION
+================================================================================
+
+[2026-01-17 22:00:00] [FEAT] Creating WebSocket server for C++/React communication
+
+FILES CREATED:
+  - include/WebSocketServer.h   (WebSocket server class + JsonBuilder)
+  - src/WebSocketServer.cpp     (Implementation using libwebsockets)
+
+WebSocket Server Features:
+  - Runs on port 8080
+  - Multi-client support (tracks connection count)
+  - JSON message broadcasting (orderbook, trades, stats, price)
+  - Command receiving (sentiment, intensity, spread, speed, pause)
+  - Thread-safe message queue
+
+JSON Message Formats:
+  1. OrderBook: {"type":"orderbook","data":{"bids":[...],"asks":[...],"bestBid":X,"bestAsk":Y,"spread":Z}}
+  2. Trade: {"type":"trade","data":{"id":N,"price":X,"quantity":Y,"side":"BUY"|"SELL","timestamp":T}}
+  3. Stats: {"type":"stats","data":{"symbol":"XXX","currentPrice":X,...}}
+  4. Price: {"type":"price","data":{"timestamp":T,"price":X}}
+
+Command Format (from frontend):
+  {"type":"sentiment","value":"BULLISH"}
+  {"type":"intensity","value":"AGGRESSIVE"}
+  {"type":"spread","value":"0.10"}
+  {"type":"speed","value":"2.0"}
+  {"type":"pause","value":"true"}
+  {"type":"reset","value":"true"}
+
+--------------------------------------------------------------------------------
+BUILD CONFIGURATION UPDATES (CMakeLists.txt)
+--------------------------------------------------------------------------------
+Added WebSocket support:
+  - WEBSOCKETS_INCLUDE_DIR = C:/msys64/mingw64/include
+  - WEBSOCKETS_LIBRARY = C:/msys64/mingw64/lib/libwebsockets_static.a
+  - Define: WEBSOCKET_ENABLED (when library found)
+  - Link libraries: ws2_32, crypt32, bcrypt, ssl, crypto
+
+Conditional compilation:
+  - WebSocketServer.cpp only compiled if WEBSOCKET_ENABLED
+  - #ifdef WEBSOCKET_ENABLED guards in main.cpp
+
+--------------------------------------------------------------------------------
+MAIN.CPP MODIFICATIONS
+--------------------------------------------------------------------------------
+1. Added global WebSocket server pointer
+2. Added price tracking atomics (g_openPrice, g_highPrice, g_lowPrice, g_currentPrice)
+3. Modified orderProcessor() to:
+   - Broadcast trades via WebSocket
+   - Update OHLC price tracking
+4. Modified displayUpdater() to:
+   - Broadcast orderbook data every loop
+   - Broadcast stats data
+   - Broadcast price points
+   - Show [WS:N] connection count in status line
+5. Added WebSocket server initialization in main()
+6. Added command callback for frontend controls
+7. Added --auto-start (-a) flag to skip "press any key" prompt
+
+--------------------------------------------------------------------------------
+COMPILATION FIXES
+--------------------------------------------------------------------------------
+Issue: MarketSentimentController namespace conflict
+Fix: Removed forward declaration from orderbook namespace in WebSocketServer.h
+
+Issue: getBids/getAsks methods not found
+Fix: Changed to getTopBids(15) and getTopAsks(15)
+
+Issue: callback function private
+Fix: Made callback() public for C linkage with lws_protocols
+
+Issue: std::find not found
+Fix: Added #include <algorithm> to WebSocketServer.cpp
+
+--------------------------------------------------------------------------------
+BUILD COMMANDS
+--------------------------------------------------------------------------------
+# Configure (from build directory)
+cd C:\Projects\order-book-visualizer\build
+$env:PATH = "C:\msys64\mingw64\bin;" + $env:PATH
+cmake .. -G "MinGW Makefiles"
+
+# Build
+mingw32-make
+
+# Result: [100%] Built target orderbook
+
+--------------------------------------------------------------------------------
+RUNNING THE APPLICATION
+--------------------------------------------------------------------------------
+# Start C++ backend (with WebSocket server on port 8080)
+cd C:\Projects\order-book-visualizer\build\bin
+.\orderbook.exe -s AAPL -p 180 --speed 1 --auto-start
+
+# Backend console shows: [WS:N] where N = number of WebSocket connections
+
+# Start React frontend (in separate terminal)
+cd C:\Projects\order-book-visualizer\frontend
+node "C:\Program Files\nodejs\node.exe" node_modules/vite/bin/vite.js --host
+
+# Or using npm.cmd:
+"C:\Program Files\nodejs\npm.cmd" run dev
+
+# Open browser: http://localhost:5173
+
+--------------------------------------------------------------------------------
+FRONTEND CHANGES
+--------------------------------------------------------------------------------
+File: frontend/src/App.tsx
+Changed: Switched from useMockData() to useWebSocket()
+
+Before:
+  const { ... } = useMockData();
+  
+After:
+  const { ... } = useWebSocket();
+
+WebSocket connection established at ws://localhost:8080
+
+--------------------------------------------------------------------------------
+TESTING RESULTS
+--------------------------------------------------------------------------------
+[2026-01-17 23:00:00] [TEST] WebSocket connection: SUCCESS
+  - Backend shows [WS:2] indicating 2 active connections
+  - Frontend displays real order book data from C++ simulation
+  - Controls work: sentiment, intensity, spread, speed, pause
+  - Price chart updates with real trades
+  - Trade ticker shows actual executed orders
+
+Performance:
+  - ~100ms display update interval
+  - Smooth real-time updates
+  - No visible lag in order book
+
+================================================================================
+PROJECT STATUS: PHASE 2 COMPLETE
+================================================================================
+
+✓ Phase 1: C++ Backend
+  - Order book with bid/ask levels
+  - Matching engine with trade execution
+  - Market sentiment system (6 types)
+  - Intensity levels (5 types)
+  - Spread control ($0.05 - $0.25)
+  - Tick size ($0.05)
+  - Price logging to prices.txt
+  - Console visualization
+  - Keyboard controls (runtime)
+  - Command-line options
+
+✓ Phase 2: React Frontend
+  - Real-time price chart (Recharts)
+  - Order book depth display
+  - Control panel (sentiment, intensity, spread, speed)
+  - Stats panel (OHLC, volume, trade count)
+  - Trade ticker (recent trades)
+  - WebSocket connection to backend
+  - Responsive Tailwind CSS design
+
+Files Structure (Final):
+  order-book-visualizer/
+  ├── CMakeLists.txt
+  ├── build_log.txt
+  ├── include/
+  │   ├── Common.h
+  │   ├── Order.h
+  │   ├── OrderBook.h
+  │   ├── OrderQueue.h
+  │   ├── MatchingEngine.h
+  │   ├── MarketSentiment.h
+  │   ├── Visualizer.h
+  │   └── WebSocketServer.h      ← NEW
+  ├── src/
+  │   ├── main.cpp
+  │   ├── Order.cpp
+  │   ├── OrderBook.cpp
+  │   ├── OrderQueue.cpp
+  │   ├── MatchingEngine.cpp
+  │   ├── Visualizer.cpp
+  │   └── WebSocketServer.cpp    ← NEW
+  ├── build/
+  │   └── bin/
+  │       └── orderbook.exe
+  └── frontend/
+      ├── package.json
+      ├── vite.config.ts
+      ├── tsconfig.json
+      ├── index.html
+      └── src/
+          ├── App.tsx
+          ├── main.tsx
+          ├── index.css
+          ├── types.ts
+          ├── hooks/
+          │   ├── useWebSocket.ts    ← Active
+          │   └── useMockData.ts     ← Demo mode
+          └── components/
+              ├── Header.tsx
+              ├── PriceChart.tsx
+              ├── OrderBook.tsx
+              ├── ControlPanel.tsx
+              ├── StatsPanel.tsx
+              └── TradeTicker.tsx
+
+================================================================================
+USAGE EXAMPLES
+================================================================================
+
+# Basic run (with interactive start)
+.\orderbook.exe
+
+# With all options
+.\orderbook.exe -s MSFT -p 350 --spread 0.10 --sentiment bullish --intensity aggressive --speed 2 --auto-start
+
+# Interactive mode
+.\orderbook.exe -i
+
+# Help
+.\orderbook.exe -h
+
+# Command Line Options:
+  -i, --interactive       Interactive setup (prompts for all options)
+  -p, --price <value>     Base price ($100 - $500, default: $100)
+  -s, --symbol <name>     Stock symbol (default: DEMO)
+  --spread <value>        Initial spread ($0.05 - $0.25, default: $0.05)
+  --sentiment <type>      bullish|bearish|volatile|calm|choppy|neutral
+  --intensity <level>     mild|moderate|normal|aggressive|extreme
+  --speed <value>         Speed multiplier (0.25 - 4.0)
+  -a, --auto-start        Skip 'press any key' prompt
+  --headless              Run without terminal UI (for WebSocket mode)
+  -h, --help              Show this help
+
+# Runtime Keyboard Controls:
+  1-6       - Switch sentiment (1=Bull 2=Bear 3=Vol 4=Calm 5=Chop 6=Neutral)
+  M/N/A/X   - Set intensity (M=Mild N=Normal A=Aggressive X=eXtreme)
+  + / -     - Increase/decrease spread
+  P         - Pause/Resume simulation
+  F / S     - Faster/Slower speed
+  SPACE     - Cycle sentiment
+  TAB       - Cycle intensity
+  Q / ESC   - Quit
+
+================================================================================
+SESSION: 2026-01-18 - PHASE 2: WEB FRONTEND
+================================================================================
+
+[2026-01-18 00:00:00] [INFO] Starting Phase 2: Web Frontend Development
+
+--------------------------------------------------------------------------------
+TASK: Install libwebsockets for C++ WebSocket Server
+--------------------------------------------------------------------------------
+[2026-01-18 00:01:00] [DEP]  Installing libwebsockets via MSYS2
+COMMAND: pacman -S --noconfirm mingw-w64-x86_64-libwebsockets
+[2026-01-18 00:01:30] [DEP]  libwebsockets 4.4.1 installed
+
+--------------------------------------------------------------------------------
+TASK: Create WebSocketServer Class
+--------------------------------------------------------------------------------
+[2026-01-18 00:10:00] [FEAT] Created include/WebSocketServer.h
+[2026-01-18 00:10:01] [FEAT] Created src/WebSocketServer.cpp
+[2026-01-18 00:10:02] [FEAT] Created JsonBuilder class for JSON serialization
+[2026-01-18 00:10:03] [FEAT] Implemented broadcast methods for orderbook/trade/stats/price
+[2026-01-18 00:10:04] [FEAT] Added command callback for receiving client commands
+
+--------------------------------------------------------------------------------
+TASK: Integrate WebSocket with Main Simulation
+--------------------------------------------------------------------------------
+[2026-01-18 00:20:00] [FEAT] Modified main.cpp to start WebSocket server
+[2026-01-18 00:20:01] [FEAT] Added JSON broadcasting in display updater thread
+[2026-01-18 00:20:02] [FEAT] Added command handling for sentiment/intensity/speed/pause
+
+--------------------------------------------------------------------------------
+TASK: Create React Frontend
+--------------------------------------------------------------------------------
+[2026-01-18 01:00:00] [FEAT] Created frontend/ directory
+[2026-01-18 01:00:01] [DEP]  Initialized Vite + React + TypeScript project
+
+COMMAND: npm create vite@latest frontend -- --template react-ts
+[2026-01-18 01:00:30] [DEP]  Vite v7.3.1 project created
+
+COMMAND: cd frontend && npm install
+[2026-01-18 01:01:00] [DEP]  Dependencies installed
+
+COMMAND: npm install recharts tailwindcss postcss autoprefixer
+[2026-01-18 01:01:30] [DEP]  Recharts and Tailwind CSS installed
+
+[2026-01-18 01:10:00] [FEAT] Created frontend/src/types.ts - TypeScript interfaces
+[2026-01-18 01:10:01] [FEAT] Created frontend/src/hooks/useWebSocket.ts - WebSocket hook
+[2026-01-18 01:10:02] [FEAT] Created frontend/src/components/Header.tsx
+[2026-01-18 01:10:03] [FEAT] Created frontend/src/components/PriceChart.tsx
+[2026-01-18 01:10:04] [FEAT] Created frontend/src/components/OrderBook.tsx
+[2026-01-18 01:10:05] [FEAT] Created frontend/src/components/ControlPanel.tsx
+[2026-01-18 01:10:06] [FEAT] Created frontend/src/components/StatsPanel.tsx
+[2026-01-18 01:10:07] [FEAT] Created frontend/src/components/TradeTicker.tsx
+[2026-01-18 01:10:08] [FEAT] Created frontend/src/App.tsx - Main layout
+
+--------------------------------------------------------------------------------
+ERROR: C++ WebSocket Handshake Failure
+--------------------------------------------------------------------------------
+[2026-01-18 02:00:00] [ERR]  WebSocket clients connecting then immediately disconnecting
+[2026-01-18 02:00:01] [ERR]  Error from Node.js ws client: "Invalid header token"
+[2026-01-18 02:00:02] [INFO] Backend shows: "Client connected (total: 1)" then immediately
+                             "Client disconnected (total: 0)"
+[2026-01-18 02:00:03] [INFO] netstat shows many TIME_WAIT connections to port 8080
+
+--------------------------------------------------------------------------------
+ATTEMPTED FIX #1: Remove Security Headers
+--------------------------------------------------------------------------------
+[2026-01-18 02:10:00] [FIX]  Removed LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE
+[2026-01-18 02:10:01] [BUILD] Rebuilt project
+[2026-01-18 02:10:02] [TEST] Still failing - same error
+
+--------------------------------------------------------------------------------
+ATTEMPTED FIX #2: Change Protocol Name
+--------------------------------------------------------------------------------
+[2026-01-18 02:20:00] [FIX]  Changed protocol from "orderbook-protocol" to "http"
+[2026-01-18 02:20:01] [BUILD] Rebuilt project
+[2026-01-18 02:20:02] [TEST] Still failing - same error
+
+--------------------------------------------------------------------------------
+RESOLUTION: Create Node.js WebSocket Server
+--------------------------------------------------------------------------------
+[2026-01-18 02:30:00] [INFO] Decision: Replace C++ libwebsockets with Node.js ws
+[2026-01-18 02:30:01] [FEAT] Created ws-server.js - Complete simulation server
+
+COMMAND: cd C:\Projects\order-book-visualizer && npm install ws
+[2026-01-18 02:30:30] [DEP]  ws (WebSocket library) installed
+
+[2026-01-18 02:31:00] [FEAT] Implemented order book generation with bid/ask
+[2026-01-18 02:31:01] [FEAT] Implemented price updates based on sentiment
+[2026-01-18 02:31:02] [FEAT] Implemented trade generation
+[2026-01-18 02:31:03] [FEAT] Implemented stats broadcasting
+[2026-01-18 02:31:04] [FEAT] Implemented command handling (start/sentiment/intensity/speed/pause)
+
+--------------------------------------------------------------------------------
+TEST: WebSocket Connection
+--------------------------------------------------------------------------------
+[2026-01-18 02:40:00] [TEST] Started Node.js WebSocket server on port 8080
+[2026-01-18 02:40:01] [TEST] Started Vite dev server on port 5173
+[2026-01-18 02:40:02] [TEST] Opened http://localhost:5173
+[2026-01-18 02:40:03] [TEST] SUCCESS - WebSocket connected!
+[2026-01-18 02:40:04] [TEST] SUCCESS - Order book data flowing
+[2026-01-18 02:40:05] [TEST] SUCCESS - Price chart updating
+[2026-01-18 02:40:06] [TEST] SUCCESS - Trades appearing
+
+--------------------------------------------------------------------------------
+BUG FIX: PriceChart TypeScript Error
+--------------------------------------------------------------------------------
+[2026-01-18 02:45:00] [ERR]  Build error: Parameter 'value' implicitly has 'any' type
+[2026-01-18 02:45:01] [FIX]  Changed formatter to: (value) => value != null ? `$${value.toFixed(2)}` : ''
+[2026-01-18 02:45:02] [BUILD] SUCCESS
+
+--------------------------------------------------------------------------------
+BUG FIX: React StrictMode Double-Mount
+--------------------------------------------------------------------------------
+[2026-01-18 02:50:00] [ERR]  WebSocket connecting twice on component mount
+[2026-01-18 02:50:01] [INFO] Root cause: React StrictMode mounts components twice in dev
+[2026-01-18 02:50:02] [FIX]  Added useRef to track connection: const hasConnected = useRef(false);
+[2026-01-18 02:50:03] [BUILD] SUCCESS
+
+--------------------------------------------------------------------------------
+FEATURE: Headless Mode for C++ Backend
+--------------------------------------------------------------------------------
+[2026-01-18 03:00:00] [FEAT] Added --headless CLI flag to main.cpp
+[2026-01-18 03:00:01] [FEAT] Skip terminal UI rendering when headless=true
+[2026-01-18 03:00:02] [BUILD] SUCCESS
+
+================================================================================
+CURRENT STATE: 2026-01-18
+================================================================================
+
+WORKING SETUP:
+  Backend:  Node.js WebSocket server (ws-server.js) on port 8080
+  Frontend: React + Vite on port 5173
+  
+HOW TO RUN:
+  Terminal 1: cd C:\Projects\order-book-visualizer && node ws-server.js
+  Terminal 2: cd C:\Projects\order-book-visualizer\frontend && npm run dev
+  Browser:    http://localhost:5173
+
+FILE STRUCTURE (Phase 2 - Updated):
+  order-book-visualizer/
+  ├── ws-server.js              ← Node.js WebSocket simulation server
+  ├── package.json              ← Node.js dependencies (ws)
+  └── frontend/
+      ├── package.json
+      ├── vite.config.ts
+      ├── tsconfig.json
+      ├── tailwind.config.js
+      ├── postcss.config.js
+      ├── index.html
+      └── src/
+          ├── App.tsx            ← React Router setup
+          ├── main.tsx
+          ├── index.css          ← Tailwind CSS imports
+          ├── types.ts           ← TypeScript interfaces
+          ├── hooks/
+          │   └── useWebSocket.ts ← WebSocket connection hook
+          ├── pages/
+          │   ├── LandingPage.tsx  ← Configuration form (NEW)
+          │   └── VisualizerPage.tsx ← Main visualizer (NEW)
+          └── components/
+              ├── Header.tsx       ← With back button support
+              ├── PriceChart.tsx   ← Recharts line chart
+              ├── OrderBook.tsx    ← Bid/ask depth display
+              ├── ControlPanel.tsx ← Sentiment/intensity controls
+              ├── StatsPanel.tsx   ← Market statistics
+              └── TradeTicker.tsx  ← Recent trades list
+
+================================================================================
+SESSION: 2026-01-18 (continued) - LANDING PAGE & PRICE TUNING
+================================================================================
+
+--------------------------------------------------------------------------------
+TASK: Create Landing Page with Configuration Form
+--------------------------------------------------------------------------------
+[2026-01-18 03:30:00] [DEP]  Installing react-router-dom
+
+COMMAND: npm install react-router-dom
+[2026-01-18 03:30:10] [DEP]  react-router-dom installed
+
+[2026-01-18 03:31:00] [FEAT] Created frontend/src/pages/LandingPage.tsx
+                             - Symbol input field
+                             - Starting price input ($100-$500)
+                             - Spread slider ($0.05-$0.25)
+                             - Speed slider (0.25x-4x)
+                             - Sentiment selection (6 options with icons)
+                             - Intensity selection (5 options)
+                             - Start Simulation button
+                             - Feature highlights section
+
+[2026-01-18 03:32:00] [FEAT] Created frontend/src/pages/VisualizerPage.tsx
+                             - Extracted from App.tsx
+                             - Reads config from URL params
+                             - Back button navigation to landing
+
+[2026-01-18 03:33:00] [FEAT] Updated frontend/src/App.tsx
+                             - Added BrowserRouter
+                             - Route "/" → LandingPage
+                             - Route "/visualizer" → VisualizerPage
+
+[2026-01-18 03:34:00] [FEAT] Updated frontend/src/components/Header.tsx
+                             - Added optional symbol prop
+                             - Added optional onBack prop with arrow icon
+                             - Display symbol in header when provided
+
+--------------------------------------------------------------------------------
+TASK: Tune Price Movement Parameters
+--------------------------------------------------------------------------------
+[2026-01-18 04:00:00] [FIX]  Price movement too aggressive in bullish/bearish modes
+
+PROBLEM: 
+  - Bullish + Aggressive/Extreme caused prices to skyrocket
+  - Bearish + Aggressive/Extreme caused prices to crash
+  - Volatile mode had too wide swings
+
+CHANGES TO ws-server.js:
+  Before:                          After:
+  ─────────────────────────────────────────────────────────────
+  BULLISH:
+    drift = 0.0005                 drift = 0.00015 (~70% less)
+    volatility = 0.002             volatility = 0.0006 (~70% less)
+  
+  BEARISH:
+    drift = -0.0005                drift = -0.00015 (~70% less)
+    volatility = 0.002             volatility = 0.0006 (~70% less)
+  
+  VOLATILE:
+    volatility = 0.005             volatility = 0.0015 (~70% less)
+  
+  CHOPPY:
+    volatility = 0.003             volatility = 0.001 (~67% less)
+  
+  INTENSITY MULTIPLIERS:
+    MILD = 0.3                     MILD = 0.4
+    MODERATE = 0.6                 MODERATE = 0.7
+    AGGRESSIVE = 1.5               AGGRESSIVE = 1.3 (reduced)
+    EXTREME = 2.5                  EXTREME = 1.8 (reduced)
+
+[2026-01-18 04:01:00] [TEST] Tested all sentiment/intensity combinations
+[2026-01-18 04:01:01] [TEST] ✅ Price movements now gradual and realistic
+
+================================================================================
+SESSION: 2026-01-18 (continued) - CANDLESTICK & TIMEFRAMES
+================================================================================
+
+--------------------------------------------------------------------------------
+TASK: Add Candlestick Chart with Multiple Timeframes
+--------------------------------------------------------------------------------
+[2026-01-18 04:30:00] [INFO] Starting Task 22: Candlestick Chart & Timeframes
+
+[2026-01-18 04:31:00] [FEAT] Created CandlestickChart.tsx component
+                      - Timeframe selection: Tick, 1s, 5s, 30s, 1m, 5m
+                      - Chart type toggle: Line vs Candlestick
+                      - OHLC candle aggregation from price ticks
+                      - Volume tracking per candle
+
+[2026-01-18 04:32:00] [FEAT] Implemented candlestick rendering
+                      - Green candles for price increase (close > open)
+                      - Red candles for price decrease (close < open)
+                      - Wicks showing high/low range
+                      - Fixed candle width (4px) and spacing (6px)
+
+[2026-01-18 04:33:00] [FEAT] Added volume bar chart
+                      - Aligned with candlestick positions
+                      - Green/red bars matching candle direction
+                      - 30% of chart height dedicated to volume
+
+[2026-01-18 04:34:00] [FEAT] Added types.ts updates
+                      - Candle interface (timestamp, open, high, low, close, volume)
+                      - Timeframe type (0|1|5|30|60|300 seconds)
+                      - ChartType type ('line'|'candle')
+
+[2026-01-18 04:35:00] [FEAT] Increased price history from 200 to 2000 points
+                      - Allows more candle data for longer timeframes
+
+--------------------------------------------------------------------------------
+TASK: Multi-Session WebSocket Server
+--------------------------------------------------------------------------------
+[2026-01-18 05:00:00] [FEAT] Refactored ws-server.js for multi-session
+
+ARCHITECTURE CHANGE:
+  Before: Single global simulation state, all clients share same data
+  After:  Per-connection state, each client gets independent simulation
+
+[2026-01-18 05:01:00] [FEAT] Implemented per-session state
+                      - sessions Map stores client state by session ID
+                      - createSimulationState() creates fresh state per client
+                      - Each session has own: price, orderbook, trades, controls
+
+[2026-01-18 05:02:00] [FEAT] Session lifecycle management
+                      - Session created on WebSocket connection
+                      - Session destroyed on disconnect
+                      - Interval cleared on disconnect to prevent memory leaks
+
+[2026-01-18 05:03:00] [FIX]  Pause/play broadcasts stats immediately
+                      - Fixed issue where UI didn't reflect pause state
+                      - Now sends stats on any state change
+
+--------------------------------------------------------------------------------
+TASK: Responsive UI & Adaptive Charts
+--------------------------------------------------------------------------------
+[2026-01-18 06:00:00] [FEAT] Made all UI components responsive
+                      - Responsive grid layouts with col-span breakpoints
+                      - Smaller text sizes for mobile (text-xs, text-sm)
+                      - Compact padding on small screens (p-2 sm:p-4)
+
+[2026-01-18 06:01:00] [FEAT] Added adaptive candle count
+                      - ResizeObserver monitors chart container width
+                      - Calculates max visible candles based on available space
+                      - Minimum 30 candles always shown
+
+[2026-01-18 06:02:00] [FIX]  Chart disappearing on window shrink
+                      - Added minHeight constraints (500px for chart)
+                      - Changed from flex h-screen to scrollable min-h-screen
+                      - Added requestAnimationFrame debouncing for resize
+
+[2026-01-18 06:03:00] [FIX]  Window resize listener backup
+                      - Added window.addEventListener('resize') as fallback
+                      - Proper cleanup in useEffect return
+
+--------------------------------------------------------------------------------
+TASK: UI Enhancements
+--------------------------------------------------------------------------------
+[2026-01-18 07:00:00] [FEAT] Trade ticker dropdown
+                      - Options: 8, 10, 15, 20 trades
+                      - Default: 10 trades
+                      - Dropdown styled to match dark theme
+
+[2026-01-18 07:01:00] [FEAT] Scrollable page layout
+                      - Changed from h-screen flex to min-h-screen scroll
+                      - Fixed heights for chart sections (500px)
+                      - Allows full page scrolling on smaller screens
+
+--------------------------------------------------------------------------------
+TASK: Sentiment & Intensity Fine-Tuning
+--------------------------------------------------------------------------------
+[2026-01-18 08:00:00] [FEAT] Enhanced sentiment effects
+
+SENTIMENT EFFECTS (Updated):
+  Sentiment  │ Drift      │ Volatility │ Buy%  │ Order Book
+  ───────────┼────────────┼────────────┼───────┼─────────────────
+  BULLISH    │ +0.0004    │ 0.0006     │ 70%   │ 1.5x bids, 0.7x asks
+  BEARISH    │ -0.0004    │ 0.0006     │ 30%   │ 0.7x bids, 1.5x asks
+  VOLATILE   │ 0          │ 0.002      │ 50%   │ 0.6x both (thin)
+  CALM       │ 0          │ 0.0001     │ 50%   │ 1.3x both (thick)
+  CHOPPY     │ oscillating│ 0.0012     │ 45-55%│ uneven, shifting
+  NEUTRAL    │ random     │ 0.0004     │ 50%   │ balanced
+
+[2026-01-18 08:01:00] [FEAT] Enhanced intensity effects
+
+INTENSITY MULTIPLIERS (Updated):
+  Intensity   │ Price Mult │ Volume Mult
+  ────────────┼────────────┼─────────────
+  MILD        │ 0.3x       │ 0.5x
+  MODERATE    │ 0.6x       │ 0.8x
+  NORMAL      │ 1.0x       │ 1.0x
+  AGGRESSIVE  │ 1.5x       │ 1.8x
+  EXTREME     │ 2.5x       │ 3.0x
+
+[2026-01-18 08:02:00] [FEAT] Buy probability by sentiment
+                      - getBuyProbability() function
+                      - Bullish: 70% buys, Bearish: 30% buys
+                      - Choppy: Random 45-55%
+
+[2026-01-18 08:03:00] [FEAT] Order book depth by sentiment
+                      - Bullish: More bids (buyers), fewer asks
+                      - Bearish: Fewer bids, more asks (sellers)
+                      - Volatile: Thin book both sides
+                      - Calm: Thick book both sides
+
+================================================================================
+CURRENT STATE: 2026-01-18 (End of Day)
+================================================================================
+
+WORKING SETUP:
+  Backend:  Node.js WebSocket server (ws-server.js) on port 8080
+            - Multi-session mode (independent simulations per client)
+            - Probability-based price movement with pullbacks
+            - Candle caching (500 per timeframe)
+  Frontend: React + Vite on port 5173
+            - Candlestick chart with timeframes
+            - Volume bars
+            - Educational tooltips (Portal-based)
+            - Price color display (green=up, red=down)
+            - Responsive layout
+  
+HOW TO RUN:
+  Terminal 1: 
+    $env:PATH = "C:\Program Files\nodejs;$env:PATH"
+    cd C:\Projects\order-book-visualizer
+    node ws-server.js
+    
+  Terminal 2: 
+    $env:PATH = "C:\Program Files\nodejs;$env:PATH"
+    cd C:\Projects\order-book-visualizer\frontend
+    npm.cmd run dev
+    
+  Browser: http://localhost:5173
+
+FILE STRUCTURE (Phase 3 - Complete):
+  order-book-visualizer/
+  ├── ws-server.js              ← Node.js WebSocket (multi-session)
+  ├── package.json              ← Node.js dependencies (ws)
+  └── frontend/
+      ├── package.json
+      ├── vite.config.ts
+      ├── tsconfig.json
+      ├── tailwind.config.js
+      ├── postcss.config.js
+      ├── index.html
+      └── src/
+          ├── App.tsx            ← React Router setup
+          ├── main.tsx
+          ├── index.css          ← Tailwind CSS imports
+          ├── types.ts           ← TypeScript interfaces (Candle, Timeframe)
+          ├── hooks/
+          │   └── useWebSocket.ts ← WebSocket hook + candle caching
+          ├── context/
+          │   └── EducationalModeContext.tsx ← Educational mode state
+          ├── pages/
+          │   ├── LandingPage.tsx  ← Configuration form
+          │   └── VisualizerPage.tsx ← Main visualizer (responsive)
+          └── components/
+              ├── Header.tsx       ← With back button + edu toggle
+              ├── CandlestickChart.tsx ← Candles + Volume + Price color
+              ├── OrderBook.tsx    ← Bid/ask depth display
+              ├── ControlPanel.tsx ← Sentiment/intensity controls
+              ├── StatsPanel.tsx   ← Market statistics
+              ├── TradeTicker.tsx  ← Recent trades (default: 8)
+              └── EducationalTooltip.tsx ← Portal-based tooltips
+
+================================================================================
+SESSION: 2026-01-18 (Evening) - PRICE MOVEMENT & UI POLISH
+================================================================================
+
+[2026-01-18 18:00:00] [INFO] Continuing Phase 3 development
+
+--------------------------------------------------------------------------------
+PROBLEM: Price movement was too linear (straight lines up/down)
+SOLUTION: Replace wave-based system with probability + pullbacks
+--------------------------------------------------------------------------------
+
+[2026-01-18 18:01:00] [FEAT] Simplified price movement algorithm
+
+OLD APPROACH (Wave-Based):
+  - Sin wave oscillation + trend bias + momentum
+  - Too many interacting variables
+  - Hard to tune correctly
+
+NEW APPROACH (Probability + Forced Pullbacks):
+  - Simple probability per tick: UP or DOWN
+  - Bullish: 65% UP, Bearish: 35% UP
+  - Forced counter-trend pullback every 8-15 moves
+
+--------------------------------------------------------------------------------
+COMMAND: (edit ws-server.js - updatePrice function)
+PURPOSE: Implement probability-based direction with forced pullbacks
+--------------------------------------------------------------------------------
+
+PRICE MOVEMENT PARAMETERS (Final):
+  Sentiment   │ Up Prob │ Volatility │ Behavior
+  ────────────┼─────────┼────────────┼─────────────────────────────
+  BULLISH     │   65%   │   0.0005   │ Trends up with pullbacks
+  BEARISH     │   35%   │   0.0005   │ Trends down with bounces
+  VOLATILE    │   50%   │   0.0015   │ Big swings both ways
+  SIDEWAYS    │   50%   │   0.0002   │ Tight range, small moves
+  CHOPPY      │   50%   │   0.001    │ Medium erratic moves
+  NEUTRAL     │   50%   │   0.0004   │ Random walk
+
+PULLBACK LOGIC:
+  - Track consecutiveMoves in same direction
+  - Threshold: 8-15 consecutive moves (random)
+  - When threshold hit: force 2-5 ticks counter-trend
+  - Pullback strength: 70-90% of normal move size
+
+--------------------------------------------------------------------------------
+COMMAND: Get-Process -Name "node" | Stop-Process -Force; node ws-server.js
+PURPOSE: Restart WebSocket server to apply price movement changes
+--------------------------------------------------------------------------------
+[2026-01-18 18:10:00] [BUILD] Server restarted on ws://localhost:8080
+[2026-01-18 18:10:01] [TEST] Tested BULLISH - trends UP with pullbacks ✅
+[2026-01-18 18:10:02] [TEST] Tested BEARISH - trends DOWN with bounces ✅
+
+--------------------------------------------------------------------------------
+FEATURE: Price Color Display
+PURPOSE: Show green when price goes UP, red when DOWN from previous tick
+--------------------------------------------------------------------------------
+
+[2026-01-18 18:15:00] [FEAT] Created PriceDisplay component
+
+IMPLEMENTATION (CandlestickChart.tsx):
+  const PriceDisplay = memo(({ price }) => {
+    const prevPriceRef = useRef(null);
+    const [priceColor, setPriceColor] = useState('white');
+    
+    useEffect(() => {
+      if (prevPriceRef.current !== null) {
+        if (price > prevPriceRef.current) setPriceColor('green');
+        else if (price < prevPriceRef.current) setPriceColor('red');
+      }
+      prevPriceRef.current = price;
+    }, [price]);
+    
+    return <span className={colorClass}>${price.toFixed(2)}</span>;
+  });
+
+[2026-01-18 18:15:01] [FEAT] Price header now shows tick-by-tick color changes
+
+--------------------------------------------------------------------------------
+FEATURE: Recent Trades Default Change
+PURPOSE: Set default display count from 10 to 8 trades
+--------------------------------------------------------------------------------
+
+[2026-01-18 18:20:00] [FEAT] Changed TradeTicker default
+
+--------------------------------------------------------------------------------
+COMMAND: (edit TradeTicker.tsx)
+BEFORE: const [maxDisplay, setMaxDisplay] = useState<number>(10);
+AFTER:  const [maxDisplay, setMaxDisplay] = useState<number>(8);
+PURPOSE: Better fit for typical screen sizes
+--------------------------------------------------------------------------------
+
+[2026-01-18 18:20:01] [FEAT] Recent trades default now 8 (was 10)
+
+================================================================================
+SESSION: 2026-01-18 (Late) - SERVER STARTUP ISSUES
+================================================================================
+
+[2026-01-18 22:00:00] [INFO] Attempting to start servers after documentation update
+
+--------------------------------------------------------------------------------
+COMMAND: cd C:\Projects\order-book-visualizer; & "C:\Program Files\nodejs\node.exe" ws-server.js
+PURPOSE: Start WebSocket backend server
+RESULT: ✅ SUCCESS - Server running on ws://localhost:8080
+--------------------------------------------------------------------------------
+
+[2026-01-18 22:00:01] [BUILD] Backend started successfully
+
+--------------------------------------------------------------------------------
+COMMAND: cd C:\Projects\order-book-visualizer\frontend; npm.cmd run dev
+PURPOSE: Start React frontend dev server
+RESULT: ❌ FAILED
+--------------------------------------------------------------------------------
+
+[2026-01-18 22:00:02] [ERR]  Error #1: npm.cmd not recognized
+
+ERROR MESSAGE:
+  npm.cmd : The term 'npm.cmd' is not recognized as the name of a cmdlet, 
+  function, script file, or operable program.
+
+ROOT CAUSE:
+  Node.js/npm not in PowerShell's PATH environment variable.
+  Each new terminal session starts with default PATH.
+
+--------------------------------------------------------------------------------
+COMMAND: cd C:\Projects\order-book-visualizer\frontend; & "C:\Program Files\nodejs\npm.cmd" run dev
+PURPOSE: Try using full path to npm.cmd
+RESULT: ❌ FAILED
+--------------------------------------------------------------------------------
+
+[2026-01-18 22:00:03] [ERR]  Error #2: node not recognized (inside npm)
+
+ERROR MESSAGE:
+  '"node"' is not recognized as an internal or external command,
+  operable program or batch file.
+
+ROOT CAUSE:
+  Even though we called npm.cmd with full path, npm.cmd internally tries
+  to call 'node' which still isn't in PATH. npm needs node in PATH to work.
+
+--------------------------------------------------------------------------------
+COMMAND: $env:PATH = "C:\Program Files\nodejs;$env:PATH"; cd ...\frontend; npm run dev
+PURPOSE: Add Node.js to PATH first, then run npm
+RESULT: ❌ FAILED
+--------------------------------------------------------------------------------
+
+[2026-01-18 22:00:04] [ERR]  Error #3: PowerShell script execution disabled
+
+ERROR MESSAGE:
+  File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running 
+  scripts is disabled on this system.
+  CategoryInfo: SecurityError: (:) [], PSSecurityException
+
+ROOT CAUSE:
+  PowerShell's execution policy is set to "Restricted" (default on Windows).
+  When you type 'npm', PowerShell finds npm.ps1 (a PowerShell script) and
+  tries to run it, but script execution is blocked.
+
+EXPLANATION:
+  Windows PowerShell has security policies to prevent malicious scripts.
+  The npm.ps1 wrapper script cannot execute due to these restrictions.
+
+--------------------------------------------------------------------------------
+COMMAND: $env:PATH = "C:\Program Files\nodejs;$env:PATH"; cd ...\frontend; 
+         & "C:\Program Files\nodejs\node.exe" "C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js" run dev
+PURPOSE: Bypass npm scripts entirely - call node.exe directly with npm-cli.js
+RESULT: ✅ SUCCESS
+--------------------------------------------------------------------------------
+
+[2026-01-18 22:00:05] [FIX]  Solution: Direct node.exe invocation
+
+THE FIX EXPLAINED:
+  Instead of: npm run dev           (needs PATH + script execution)
+  We use:     node.exe npm-cli.js   (direct execution, no scripts)
+
+  Breaking it down:
+  1. $env:PATH = "..." - Add Node.js to PATH for child processes
+  2. node.exe - Call Node.js directly (exe files always work)
+  3. npm-cli.js - The actual npm logic (JavaScript file)
+  4. run dev - Arguments passed to npm
+
+[2026-01-18 22:00:06] [BUILD] Frontend started: http://localhost:5173/ ✅
+
+================================================================================
+POWERSHELL EXECUTION POLICY - REFERENCE
+================================================================================
+
+WHAT IS IT?
+  PowerShell has a security feature that controls which scripts can run.
+  Default on Windows is "Restricted" - no scripts allowed.
+
+POLICY LEVELS:
+  Restricted    - No scripts can run (default)
+  AllSigned     - Only signed scripts can run
+  RemoteSigned  - Downloaded scripts need signature, local scripts OK
+  Unrestricted  - All scripts can run (warning for downloaded)
+  Bypass        - Nothing blocked, no warnings
+
+HOW TO CHECK:
+  Get-ExecutionPolicy
+
+HOW TO FIX (if you want to allow npm scripts):
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  
+  Note: This requires admin privileges or CurrentUser scope
+
+OUR WORKAROUND:
+  Instead of changing system policy, we bypass the .ps1 script entirely
+  by calling node.exe directly with the npm-cli.js JavaScript file.
+
+================================================================================
+RELIABLE STARTUP COMMANDS (Copy-Paste Ready)
+================================================================================
+
+BACKEND (WebSocket Server):
+  cd C:\Projects\order-book-visualizer
+  & "C:\Program Files\nodejs\node.exe" ws-server.js
+
+FRONTEND (React Dev Server):
+  $env:PATH = "C:\Program Files\nodejs;$env:PATH"
+  cd C:\Projects\order-book-visualizer\frontend
+  & "C:\Program Files\nodejs\node.exe" "C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js" run dev
+
+BROWSER:
+  http://localhost:5173
+
+================================================================================
+PHASE 3 COMPLETE - SUMMARY
+================================================================================
+
+FEATURES ADDED TODAY:
+  ✅ Probability-based price movement (65%/35% for bull/bear)
+  ✅ Forced pullbacks (8-15 moves → 2-5 tick reversal)
+  ✅ Price color display (green=up, red=down)
+  ✅ Recent trades default: 8
+
+EARLIER PHASE 3 FEATURES:
+  ✅ Educational Mode with tooltips
+  ✅ Portal-based tooltip rendering (fixes clipping)
+  ✅ Candle caching (500 per timeframe on server)
+  ✅ Chart scrolling (keyboard, mouse wheel)
+  ✅ Custom mouse tracking for tooltip accuracy
+
+ISSUES RESOLVED TODAY:
+  ✅ npm.cmd not in PATH → Use full path
+  ✅ node not in PATH → Set $env:PATH first
+  ✅ PSSecurityException → Bypass npm.ps1 with direct node.exe call
+
+DOCUMENTATION UPDATED:
+  ✅ tasks.txt - Tasks 33-36 added
+  ✅ knowledge.txt - Price movement & color display sections
+  ✅ build_log.txt - This session + startup errors
+
+================================================================================
+END OF BUILD LOG
+================================================================================

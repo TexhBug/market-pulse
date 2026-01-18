@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e293b; color: #fff; }
+        #log { background: #0f172a; padding: 10px; height: 400px; overflow: auto; }
+        .error { color: #f87171; }
+        .success { color: #4ade80; }
+        .message { color: #60a5fa; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <div id="log"></div>
+    
+    <script>
+        let ws = null;
+        const log = document.getElementById('log');
+        
+        function addLog(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = new Date().toLocaleTimeString() + ' - ' + msg;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function connect() {
+            addLog('Connecting to ws://localhost:8080...');
+            try {
+                ws = new WebSocket('ws://localhost:8080');
+                
+                ws.onopen = () => {
+                    addLog('Connected!', 'success');
+                    // Send a test start command
+                    const cmd = {
+                        type: 'start',
+                        config: {
+                            symbol: 'TEST',
+                            price: 100,
+                            spread: 0.05,
+                            sentiment: 'NEUTRAL',
+                            intensity: 'NORMAL',
+                            speed: 1
+                        }
+                    };
+                    ws.send(JSON.stringify(cmd));
+                    addLog('Sent: ' + JSON.stringify(cmd));
+                };
+                
+                ws.onmessage = (e) => {
+                    addLog('Received: ' + e.data.substring(0, 200) + '...', 'message');
+                };
+                
+                ws.onclose = () => {
+                    addLog('Disconnected', 'error');
+                };
+                
+                ws.onerror = (e) => {
+                    addLog('Error: ' + e, 'error');
+                };
+            } catch(e) {
+                addLog('Exception: ' + e, 'error');
+            }
+        }
+        
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+        
+        // Auto-connect on load
+        connect();
+    </script>
+</body>
+</html>

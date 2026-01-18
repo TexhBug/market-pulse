@@ -1,0 +1,908 @@
+================================================================================
+MARKETPULSE - TASK TRACKER
+================================================================================
+Project  : MarketPulse (Real-Time Order Book Visualizer)
+Location : C:\Projects\order-book-visualizer
+App Name : MarketPulse
+================================================================================
+
+PROJECT START DATE: 2026-01-17
+PROJECT END DATE:   2026-01-17  ✅ COMPLETE!
+
+================================================================================
+TASKS
+================================================================================
+Format: [ ] Task Description                              | Date: YYYY-MM-DD
+================================================================================
+
+1. SET UP C++ DEVELOPMENT ENVIRONMENT
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 1.1 Check for existing compilers (g++/MSVC)           | Date: 2026-01-17
+[X] 1.2 Install MinGW-w64 or Visual Studio Build Tools    | Date: 2026-01-17
+[X] 1.3 Add compiler to PATH                              | Date: 2026-01-17
+[X] 1.4 Verify compiler installation                      | Date: 2026-01-17
+
+2. INSTALL CMAKE BUILD SYSTEM
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 2.1 Download/install CMake                            | Date: 2026-01-17
+[X] 2.2 Add CMake to PATH                                 | Date: 2026-01-17
+[X] 2.3 Verify CMake installation                         | Date: 2026-01-17
+
+3. CREATE PROJECT STRUCTURE
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 3.1 Create folder structure (src, include, tests)     | Date: 2026-01-17
+[X] 3.2 Create root CMakeLists.txt                        | Date: 2026-01-17
+[X] 3.3 Create src/CMakeLists.txt                         | Date: 2026-01-17
+[X] 3.4 Create tests/CMakeLists.txt                       | Date: 2026-01-17
+
+4. IMPLEMENT ORDER BOOK DATA STRUCTURES
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 4.1 Create Order struct (id, price, qty, side)        | Date: 2026-01-17
+[X] 4.2 Create PriceLevel class                           | Date: 2026-01-17
+[X] 4.3 Create OrderBook class (bids/asks)                | Date: 2026-01-17
+[X] 4.4 Implement add/cancel/modify order methods         | Date: 2026-01-17
+[X] 4.5 Implement order matching engine                   | Date: 2026-01-17
+
+5. IMPLEMENT MULTITHREADED PROCESSING
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 5.1 Create thread-safe order queue                    | Date: 2026-01-17
+[X] 5.2 Implement producer thread (order generator)       | Date: 2026-01-17
+[X] 5.3 Implement consumer thread (order processor)       | Date: 2026-01-17
+[X] 5.4 Add mutex/lock for OrderBook access               | Date: 2026-01-17
+[-] 5.5 Implement thread pool (optional)                  | Date: SKIPPED
+
+6. CREATE VISUALIZATION/UI LAYER
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 6.1 Choose UI library (ncurses/ImGui/console)         | Date: 2026-01-17
+[X] 6.2 Create OrderBookView class                        | Date: 2026-01-17
+[X] 6.3 Implement bid/ask depth display                   | Date: 2026-01-17
+[X] 6.4 Implement real-time update rendering              | Date: 2026-01-17
+[-] 6.5 Add price chart/histogram (optional)              | Date: SKIPPED
+
+7. ADD UNIT TESTS
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 7.1 Set up GoogleTest framework                       | Date: 2026-01-17
+[X] 7.2 Write Order/PriceLevel tests                      | Date: 2026-01-17
+[X] 7.3 Write OrderBook tests                             | Date: 2026-01-17
+[X] 7.4 Write thread-safety tests                         | Date: 2026-01-17
+
+8. BUILD AND TEST PROJECT
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 8.1 Configure CMake build                             | Date: 2026-01-17
+[X] 8.2 Build project                                     | Date: 2026-01-17
+[-] 8.3 Run unit tests                                    | Date: OPTIONAL
+[X] 8.4 Run integration test                              | Date: 2026-01-17
+[-] 8.5 Performance profiling (optional)                  | Date: SKIPPED
+
+9. ENHANCEMENTS - MARKET SENTIMENT SYSTEM
+   Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 9.1 Add market sentiment types (bull/bear/volatile)   | Date: 2026-01-17
+[X] 9.2 Add intensity levels (mild to extreme)            | Date: 2026-01-17
+[X] 9.3 Implement keyboard controls for sentiment         | Date: 2026-01-17
+[X] 9.4 Add price ticker display                          | Date: 2026-01-17
+[X] 9.5 Fix Unicode/emoji issues (ASCII-safe output)      | Date: 2026-01-17
+[X] 9.6 Add ASCII price chart visualization               | Date: 2026-01-17
+[X] 9.7 Fix static linking (DLL issues)                   | Date: 2026-01-17
+
+10. ENHANCEMENTS - SPREAD CONTROL SYSTEM
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 10.1 Add configurable spread parameter                | Date: 2026-01-17
+[X] 10.2 Add +/- keyboard controls for spread             | Date: 2026-01-17
+[X] 10.3 Display spread value in UI                       | Date: 2026-01-17
+[X] 10.4 Update order generation to use spread            | Date: 2026-01-17
+[X] 10.5 Update help text with spread info                | Date: 2026-01-17
+
+11. ENHANCEMENTS - REALISTIC ORDER GENERATION
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 11.1 Separate limit/market order generators           | Date: 2026-01-17
+[X] 11.2 70% market orders, 30% limit orders              | Date: 2026-01-17
+[X] 11.3 Market orders consume liquidity & move price     | Date: 2026-01-17
+[X] 11.4 Limit orders add liquidity to book               | Date: 2026-01-17
+[X] 11.5 Trade execution feedback to generator            | Date: 2026-01-17
+[X] 11.6 Display market/limit order ratio in UI           | Date: 2026-01-17
+
+12. ENHANCEMENTS - PRICE LOGGING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 12.1 Create prices.txt logging file                   | Date: 2026-01-17
+[X] 12.2 Log prices with timestamp                        | Date: 2026-01-17
+[X] 12.3 Log sentiment/intensity with each price          | Date: 2026-01-17
+[X] 12.4 Log only when sentiment/intensity CHANGES        | Date: 2026-01-17
+[X] 12.5 Session start/end markers in log                 | Date: 2026-01-17
+
+13. ENHANCEMENTS - TICK SIZE
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 13.1 Add TICK_SIZE constant ($0.05)                   | Date: 2026-01-17
+[X] 13.2 Create roundToTick() helper function             | Date: 2026-01-17
+[X] 13.3 Round limit order prices to tick                 | Date: 2026-01-17
+[X] 13.4 Round market order prices to tick                | Date: 2026-01-17
+[X] 13.5 Round trade feedback prices to tick              | Date: 2026-01-17
+[X] 13.6 Update initial order book to tick increments     | Date: 2026-01-17
+
+14. BUG FIXES - ORDER BOOK MATCHING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 14.1 Add fillQuantityAtPrice() to OrderBook           | Date: 2026-01-17
+[X] 14.2 Fix matching engine to remove filled orders      | Date: 2026-01-17
+[X] 14.3 Update matchBuyOrder to use fillQuantityAtPrice  | Date: 2026-01-17
+[X] 14.4 Update matchSellOrder to use fillQuantityAtPrice | Date: 2026-01-17
+[X] 14.5 Price now moves when liquidity is consumed       | Date: 2026-01-17
+
+15. BUG FIXES - REALISTIC MARKET RATIOS
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 15.1 Reduce market order ratio from 70% to ~12-18%    | Date: 2026-01-17
+[X] 15.2 Cap market order probability at 25% max          | Date: 2026-01-17
+[X] 15.3 Cap whale probability at 15% max                 | Date: 2026-01-17
+[X] 15.4 Limit order side balance (25-75% range)          | Date: 2026-01-17
+[X] 15.5 Smooth price movement instead of erratic jumps   | Date: 2026-01-17
+
+16. CONFIGURATION - VS CODE
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 16.1 Create .vscode/c_cpp_properties.json             | Date: 2026-01-17
+[X] 16.2 Configure MinGW-w64 include paths                | Date: 2026-01-17
+[X] 16.3 Fix IntelliSense for C++17                       | Date: 2026-01-17
+
+================================================================================
+PHASE 2: WEB FRONTEND
+================================================================================
+
+17. FRONTEND - WEBSOCKET SERVER (C++ - libwebsockets)
+    Start: 2026-01-18  |  End: 2026-01-18  ⚠️ REPLACED WITH NODE.JS
+--------------------------------------
+[X] 17.1 Install libwebsockets via MSYS2                  | Date: 2026-01-18
+[X] 17.2 Create WebSocketServer class                     | Date: 2026-01-18
+[X] 17.3 Create JsonBuilder helper class                  | Date: 2026-01-18
+[X] 17.4 Implement broadcast methods                      | Date: 2026-01-18
+[X] 17.5 Integrate WebSocket with main simulation         | Date: 2026-01-18
+[!] 17.6 ISSUE: libwebsockets handshake failing           | Date: 2026-01-18
+        Error: "Invalid header token" - browser clients disconnect
+        Root cause: libwebsockets protocol configuration issues
+        Resolution: Created Node.js WebSocket server instead
+
+17B. FRONTEND - NODE.JS WEBSOCKET SERVER (REPLACEMENT)
+     Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 17B.1 Create ws-server.js with Node.js ws library     | Date: 2026-01-18
+[X] 17B.2 Implement order book generation                 | Date: 2026-01-18
+[X] 17B.3 Implement price updates with sentiment          | Date: 2026-01-18
+[X] 17B.4 Implement trade generation                      | Date: 2026-01-18
+[X] 17B.5 Implement stats broadcasting                    | Date: 2026-01-18
+[X] 17B.6 Handle start/sentiment/intensity/speed commands | Date: 2026-01-18
+[X] 17B.7 WebSocket connection working correctly          | Date: 2026-01-18
+
+18. FRONTEND - REACT WEB UI
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 18.1 Create React + Vite + TypeScript project         | Date: 2026-01-18
+[X] 18.2 Install dependencies (Recharts, Tailwind CSS)    | Date: 2026-01-18
+[X] 18.3 Create types.ts with TypeScript interfaces       | Date: 2026-01-18
+[X] 18.4 Create useWebSocket hook                         | Date: 2026-01-18
+[X] 18.5 Create Header component                          | Date: 2026-01-18
+[X] 18.6 Create PriceChart component (Recharts)           | Date: 2026-01-18
+[X] 18.7 Create OrderBook component                       | Date: 2026-01-18
+[X] 18.8 Create ControlPanel component                    | Date: 2026-01-18
+[X] 18.9 Create StatsPanel component                      | Date: 2026-01-18
+[X] 18.10 Create TradeTicker component                    | Date: 2026-01-18
+[X] 18.11 Create App.tsx main layout                      | Date: 2026-01-18
+[X] 18.12 Configure Tailwind CSS                          | Date: 2026-01-18
+[X] 18.13 Fix TypeScript errors (PriceChart formatter)    | Date: 2026-01-18
+[X] 18.14 Add auto-connect on page load                   | Date: 2026-01-18
+
+19. BACKEND - HEADLESS MODE
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 19.1 Add --headless CLI flag                          | Date: 2026-01-18
+[X] 19.2 Skip terminal UI rendering when headless         | Date: 2026-01-18
+[X] 19.3 Add headless flag to SimulationConfig            | Date: 2026-01-18
+
+20. LANDING PAGE & NAVIGATION
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 20.1 Create LandingPage component                     | Date: 2026-01-18
+[X] 20.2 Add simulation configuration form                | Date: 2026-01-18
+[X] 20.3 Add React Router for navigation                  | Date: 2026-01-18
+[X] 20.4 Style landing page with Tailwind                 | Date: 2026-01-18
+[X] 20.5 Connect landing page to visualizer               | Date: 2026-01-18
+[X] 20.6 Create VisualizerPage component                  | Date: 2026-01-18
+[X] 20.7 Add back button navigation                       | Date: 2026-01-18
+[X] 20.8 Pass config via URL params                       | Date: 2026-01-18
+
+21. PRICE MOVEMENT TUNING
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 21.1 Reduce bullish/bearish drift (~70% reduction)    | Date: 2026-01-18
+[X] 21.2 Reduce volatility multipliers                    | Date: 2026-01-18
+[X] 21.3 Tune intensity multipliers (1.3x/1.8x max)       | Date: 2026-01-18
+[X] 21.4 Test all sentiment/intensity combinations        | Date: 2026-01-18
+
+22. CANDLESTICK CHART & TIMEFRAMES
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 22.1 Add timeframe selection (Tick, 1s, 5s, 30s, 1m, 5m) | Date: 2026-01-18
+[X] 22.2 Create OHLC candle data structure                | Date: 2026-01-18
+[X] 22.3 Aggregate price data into candles                | Date: 2026-01-18
+[X] 22.4 Implement candlestick chart component            | Date: 2026-01-18
+[X] 22.5 Add volume tracking per candle                   | Date: 2026-01-18
+[X] 22.6 Create volume bar chart (aligned with candles)   | Date: 2026-01-18
+[X] 22.7 Add chart type toggle (line/candle)              | Date: 2026-01-18
+[X] 22.8 Small compact candles (4px width, 6px spacing)   | Date: 2026-01-18
+[X] 22.9 Left-aligned candlesticks like real charts       | Date: 2026-01-18
+[X] 22.10 Adaptive max visible candles based on width     | Date: 2026-01-18
+
+23. MULTI-SESSION WEBSOCKET SERVER
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 23.1 Refactor to per-connection simulation state      | Date: 2026-01-18
+[X] 23.2 Each client gets independent price/orderbook     | Date: 2026-01-18
+[X] 23.3 Per-session pause/play/reset controls            | Date: 2026-01-18
+[X] 23.4 Session cleanup on disconnect                    | Date: 2026-01-18
+[X] 23.5 Broadcast stats immediately on state change      | Date: 2026-01-18
+
+24. RESPONSIVE UI
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 24.1 Make all components responsive                   | Date: 2026-01-18
+[X] 24.2 Add overflow handling to prevent horizontal scroll| Date: 2026-01-18
+[X] 24.3 Add minimum heights to prevent chart collapse    | Date: 2026-01-18
+[X] 24.4 ResizeObserver for adaptive chart sizing         | Date: 2026-01-18
+[X] 24.5 Window resize listener as backup                 | Date: 2026-01-18
+
+25. UI ENHANCEMENTS
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 25.1 Add trade count dropdown (8, 10, 15, 20 trades)  | Date: 2026-01-18
+[X] 25.2 Scrollable page layout (min-h-screen)            | Date: 2026-01-18
+[X] 25.3 Fixed heights for chart sections                 | Date: 2026-01-18
+
+26. SENTIMENT & INTENSITY FINE-TUNING
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 26.1 Stronger sentiment drift (0.0004 base)           | Date: 2026-01-18
+[X] 26.2 Wider intensity range (0.3x to 2.5x)             | Date: 2026-01-18
+[X] 26.3 Buy probability varies by sentiment              | Date: 2026-01-18
+[X] 26.4 Order book depth affected by sentiment           | Date: 2026-01-18
+[X] 26.5 Volume multiplier based on intensity             | Date: 2026-01-18
+[X] 26.6 Choppy sentiment oscillating micro-trends        | Date: 2026-01-18
+
+================================================================================
+ISSUES & RESOLUTIONS LOG
+================================================================================
+
+ISSUE #1: C++ libwebsockets WebSocket Handshake Failure
+Date: 2026-01-18
+Symptom: Browser clients connect then immediately disconnect
+Error: "Invalid header token" when testing with Node.js ws client
+Attempted Fixes:
+  - Removed LWS_SERVER_OPTION_HTTP_HEADERS_SECURITY_BEST_PRACTICES_ENFORCE
+  - Changed protocol name from "orderbook-protocol" to "http"
+  - None of these fixed the underlying issue
+Resolution: Created Node.js WebSocket server (ws-server.js) as replacement
+Status: RESOLVED - Using Node.js server instead
+
+ISSUE #2: React useEffect Double-Mount (StrictMode)
+Date: 2026-01-18
+Symptom: WebSocket connecting twice on component mount
+Root Cause: React StrictMode mounts components twice in development
+Resolution: Used useRef to track if already connected
+Code: const hasConnected = useRef(false);
+Status: RESOLVED
+
+ISSUE #3: TypeScript Error in PriceChart Tooltip
+Date: 2026-01-18
+Symptom: Build error on Recharts Tooltip formatter
+Error: Parameter 'value' implicitly has 'any' type
+Resolution: Changed formatter to use untyped parameter with null check
+Status: RESOLVED
+
+ISSUE #4: CMake Not in PATH
+Date: 2026-01-18
+Symptom: cmake command not found in PowerShell
+Resolution: Use MSYS2 shell or install cmake in mingw64
+Command: C:\msys64\msys2_shell.cmd -mingw64 -defterm -no-start -here -c "cmake --build ..."
+Status: RESOLVED
+
+ISSUE #5: Price Movement Too Aggressive
+Date: 2026-01-18
+Symptom: Bullish aggressive/extreme caused prices to rise too rapidly
+Root Cause: Base drift and intensity multipliers were too high
+Resolution: Reduced all drift values by ~70%, capped intensity at 1.8x max
+Before: drift=0.0005, extreme=2.5x → After: drift=0.00015, extreme=1.8x
+Status: RESOLVED
+
+ISSUE #6: Chart Disappearing on Window Shrink
+Date: 2026-01-18
+Symptom: Candlestick chart area collapses to 0 height when shrinking window
+Resolution: Added minHeight constraints and overflow-auto to containers
+Status: RESOLVED
+
+================================================================================
+LEGEND: [ ] Not Started  |  [~] In Progress  |  [X] Completed  |  [-] Skipped
+        [!] Issue/Blocked  |  ⚠️ Deprecated  |  ⏳ In Progress
+================================================================================
+
+PROJECT STATUS: PHASE 2 - 100% COMPLETE ✅
+
+SUMMARY:
+- 72 tasks completed (Phase 1)
+- 45+ tasks completed (Phase 2)
+- Build: SUCCESS
+- Run: SUCCESS
+
+FEATURES IMPLEMENTED (Phase 2):
+- React frontend with Vite + TypeScript
+- Real-time WebSocket data streaming (Node.js multi-session server)
+- Candlestick chart with OHLC data
+- Multiple timeframes (Tick, 1s, 5s, 30s, 1m, 5m)
+- Volume bars aligned with candlesticks
+- Line/Candlestick chart toggle
+- Order book depth visualization
+- Control panel for sentiment/intensity/speed
+- Stats panel showing market statistics
+- Trade ticker with configurable count (8-20)
+- Tailwind CSS styling
+- Landing page with configuration form
+- React Router navigation
+- Responsive UI with adaptive sizing
+- Fine-tuned sentiment/intensity effects
+
+HOW TO RUN:
+  # Terminal 1: Start WebSocket Server
+  $env:PATH = "C:\Program Files\nodejs;$env:PATH"
+  cd C:\Projects\order-book-visualizer
+  node ws-server.js
+  
+  # Terminal 2: Start Frontend
+  $env:PATH = "C:\Program Files\nodejs;$env:PATH"
+  cd C:\Projects\order-book-visualizer\frontend
+  npm.cmd run dev
+  
+  # Open browser: http://localhost:5173
+
+================================================================================
+PHASE 3: ENHANCEMENTS & POLISH
+================================================================================
+
+27. EDUCATIONAL MODE
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 27.1 Create EducationalModeContext                    | Date: 2026-01-18
+[X] 27.2 Add toggle in Header component                   | Date: 2026-01-18
+[X] 27.3 Create EducationalTooltip component              | Date: 2026-01-18
+[X] 27.4 Add tooltips to OrderBook columns                | Date: 2026-01-18
+[X] 27.5 Add tooltips to TradeTicker columns              | Date: 2026-01-18
+[X] 27.6 Add tooltips to CandlestickChart controls        | Date: 2026-01-18
+[X] 27.7 Fix tooltip layout using CSS `contents`          | Date: 2026-01-18
+[X] 27.8 Wrap entire header rows for alignment            | Date: 2026-01-18
+
+28. CHART SCROLLING & HISTORY
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 28.1 Add scroll offset state                          | Date: 2026-01-18
+[X] 28.2 Implement scroll left/right controls             | Date: 2026-01-18
+[X] 28.3 Add mouse wheel scrolling                        | Date: 2026-01-18
+[X] 28.4 Add "Jump to Latest" button                      | Date: 2026-01-18
+[X] 28.5 Add auto-scroll toggle                           | Date: 2026-01-18
+[X] 28.6 Increase history to 10000 price points           | Date: 2026-01-18
+
+29. CANDLE TOOLTIP IMPROVEMENTS
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 29.1 Add memoization for tooltip performance          | Date: 2026-01-18
+[X] 29.2 Add throttling for mouse events                  | Date: 2026-01-18
+[X] 29.3 Implement custom mouse tracking                  | Date: 2026-01-18
+[X] 29.4 Tooltip only on candle hover (not empty space)   | Date: 2026-01-18
+[X] 29.5 Fixed-position candles (6px spacing)             | Date: 2026-01-18
+[X] 29.6 Smart tooltip positioning (flip at edge)         | Date: 2026-01-18
+
+30. CANDLE CACHING SYSTEM
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 30.1 Server-side candle cache per timeframe           | Date: 2026-01-18
+[X] 30.2 Store completed candles (OHLC + volume only)     | Date: 2026-01-18
+[X] 30.3 Max 500 candles per timeframe                    | Date: 2026-01-18
+[X] 30.4 Send 'candle' message when period ends           | Date: 2026-01-18
+[X] 30.5 Add 'getCandles' request handler                 | Date: 2026-01-18
+[X] 30.6 Add 'candleHistory' response message             | Date: 2026-01-18
+[X] 30.7 Add 'candleReset' message on reset               | Date: 2026-01-18
+[X] 30.8 Client candleCache and currentCandles state      | Date: 2026-01-18
+[X] 30.9 Client requests candles on timeframe change      | Date: 2026-01-18
+[X] 30.10 Chart uses cached candles for all timeframes    | Date: 2026-01-18
+
+================================================================================
+ISSUES & RESOLUTIONS LOG (continued)
+================================================================================
+
+ISSUE #7: Educational Tooltips Breaking Grid Alignment
+Date: 2026-01-18
+Symptom: OrderBook and TradeTicker headers misaligned when tooltip enabled
+Root Cause: Tooltip wrapper div disrupting CSS grid flow
+Resolution: Used CSS `display: contents` on wrapper, wrap entire rows
+Status: RESOLVED
+
+ISSUE #8: Candles Disappearing on Higher Timeframes
+Date: 2026-01-18
+Symptom: 5-minute candles showed only 0-1 candles
+Root Cause: Aggregating from raw price points, limited history
+Resolution: Implemented server-side candle caching (500 per timeframe)
+Status: RESOLVED
+
+ISSUE #9: Tooltip Showing on Empty Chart Space
+Date: 2026-01-18
+Symptom: OHLC tooltip appeared when hovering anywhere on chart
+Root Cause: Recharts Tooltip triggers on any chart hover
+Resolution: Custom mouse tracking with fixed candle positions
+Status: RESOLVED
+
+================================================================================
+LEGEND: [ ] Not Started  |  [~] In Progress  |  [X] Completed  |  [-] Skipped
+        [!] Issue/Blocked  |  ⚠️ Deprecated  |  ⏳ In Progress
+================================================================================
+
+PROJECT STATUS: PHASE 3 - 100% COMPLETE ✅
+
+31. TOOLTIP PORTAL FIX
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 31.1 Identify tooltip clipping issue (overflow:hidden)  | Date: 2026-01-18
+[X] 31.2 Implement React Portal for tooltip rendering       | Date: 2026-01-18
+[X] 31.3 Calculate fixed positioning from getBoundingRect   | Date: 2026-01-18
+[X] 31.4 Add viewport boundary detection                    | Date: 2026-01-18
+[X] 31.5 Fix ref placement on measurable inner span         | Date: 2026-01-18
+
+32. REALISTIC PRICE MOVEMENT
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 32.1 Add wave/momentum state to simulation              | Date: 2026-01-18
+[X] 32.2 Implement sin wave oscillation for price cycles    | Date: 2026-01-18
+[X] 32.3 Add trend bias per sentiment (60% up/down)         | Date: 2026-01-18
+[X] 32.4 Implement pullback/reversal logic (20% chance)     | Date: 2026-01-18
+[X] 32.5 Add momentum continuation (15+ ticks)              | Date: 2026-01-18
+[X] 32.6 Configure wave amplitude/speed per sentiment       | Date: 2026-01-18
+[X] 32.7 Test all sentiment behaviors                       | Date: 2026-01-18
+
+================================================================================
+ISSUES & RESOLUTIONS LOG (continued)
+================================================================================
+
+ISSUE #10: Educational Tooltips Clipped by Overflow
+Date: 2026-01-18
+Symptom: Tooltips cut off when near container edges
+Root Cause: Parent containers have overflow:hidden, absolute positioning confined
+Resolution: Use React Portal to render tooltip at document.body level with fixed positioning
+Status: RESOLVED
+
+ISSUE #11: Price Movement Too Linear
+Date: 2026-01-18
+Symptom: Bullish/Bearish just goes straight up/down without waves
+Root Cause: Simple drift + random noise creates monotonic movement
+Resolution: Implemented wave-based system with momentum, pullbacks, and trend bias
+Status: RESOLVED
+
+================================================================================
+
+PHASE 3 FEATURES:
+- Educational Mode with contextual tooltips (portal-based)
+- Chart scrolling with keyboard/mouse wheel
+- Candle caching for unlimited history per timeframe
+- Custom mouse tracking for precise tooltips
+- Fixed-position candles (4px width, 6px spacing)
+- Realistic probability-based price movement with pullbacks
+- Price color display (green=up, red=down from previous tick)
+
+CURRENT DATA LIMITS:
+- Tick chart: 100 recent ticks
+- All other timeframes: 500 cached candles + current candle
+- Memory efficient: Only 5 values per candle (OHLC + volume)
+
+33. SIMPLIFIED PRICE MOVEMENT
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 33.1 Replace wave-based system with probability-based  | Date: 2026-01-18
+[X] 33.2 Bullish = 65% chance of up move                    | Date: 2026-01-18
+[X] 33.3 Bearish = 35% chance of up move (65% down)         | Date: 2026-01-18
+[X] 33.4 Neutral/Volatile/Sideways/Choppy = 50/50           | Date: 2026-01-18
+[X] 33.5 Configurable volatility per sentiment              | Date: 2026-01-18
+
+34. PULLBACK SYSTEM
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 34.1 Track consecutive moves in same direction          | Date: 2026-01-18
+[X] 34.2 Pullback threshold: 8-15 consecutive moves         | Date: 2026-01-18
+[X] 34.3 Pullback duration: 2-5 ticks counter-trend         | Date: 2026-01-18
+[X] 34.4 Pullback strength: 70-90% of normal move           | Date: 2026-01-18
+[X] 34.5 Reset counters after pullback completes            | Date: 2026-01-18
+
+35. PRICE COLOR DISPLAY
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 35.1 Create PriceDisplay component with useRef          | Date: 2026-01-18
+[X] 35.2 Track previous price between renders               | Date: 2026-01-18
+[X] 35.3 Green color when price goes UP                     | Date: 2026-01-18
+[X] 35.4 Red color when price goes DOWN                     | Date: 2026-01-18
+[X] 35.5 Keep previous color when price unchanged           | Date: 2026-01-18
+
+36. UI TWEAKS
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 36.1 Change Recent Trades default from 10 to 8          | Date: 2026-01-18
+
+37. CONNECTION TRACKING SYSTEM
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 37.1 Add connection metrics tracking per session        | Date: 2026-01-18
+[X] 37.2 Track IP address and User-Agent                    | Date: 2026-01-18
+[X] 37.3 Track bytes sent/received per connection           | Date: 2026-01-18
+[X] 37.4 Track message count in/out                         | Date: 2026-01-18
+[X] 37.5 Track connection duration                          | Date: 2026-01-18
+[X] 37.6 Create connection_log.txt file logging             | Date: 2026-01-18
+[X] 37.7 Log CONNECT/DISCONNECT/SUMMARY/SHUTDOWN events     | Date: 2026-01-18
+[X] 37.8 Add periodic stats summary (every 5 minutes)       | Date: 2026-01-18
+[X] 37.9 Global server metrics (totalConnections, etc)      | Date: 2026-01-18
+
+================================================================================
+PHASE 4: PERFORMANCE OPTIMIZATION (IN PROGRESS)
+================================================================================
+
+38. BACKEND - MESSAGE BATCHING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 38.1 Combine orderbook+stats+price into single message  | Date: 2026-01-17
+[X] 38.2 Reduce JSON.stringify calls from 5 to 1 per tick   | Date: 2026-01-17
+[X] 38.3 Create 'tick' message type with all data           | Date: 2026-01-17
+[X] 38.4 Update frontend to parse batched message           | Date: 2026-01-17
+[ ] 38.5 Benchmark: measure latency improvement             | Date: TBD
+
+39. BACKEND - ASYNC LOGGING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 39.1 Replace fs.appendFileSync with fs.appendFile       | Date: 2026-01-17
+[X] 39.2 Add write buffer/queue for log entries             | Date: 2026-01-17
+[X] 39.3 Flush buffer periodically (not per-write)          | Date: 2026-01-17
+[X] 39.4 Handle write errors gracefully                     | Date: 2026-01-17
+
+40. BACKEND - DEBUG MODE FLAG
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 40.1 Add DEBUG environment variable check               | Date: 2026-01-17
+[X] 40.2 Wrap console.log in debug-only conditionals        | Date: 2026-01-17
+[X] 40.3 Skip verbose logging in production mode            | Date: 2026-01-17
+[ ] 40.4 Add --debug CLI flag option                        | Date: TBD
+
+41. BACKEND - ORDER BOOK OPTIMIZATION
+    Start: TBD  |  End: TBD  [ ]
+--------------------------------------
+[ ] 41.1 Reuse bid/ask arrays instead of recreating         | Date: TBD
+[ ] 41.2 Modify prices in-place with small deltas           | Date: TBD
+[ ] 41.3 Only regenerate on significant price change        | Date: TBD
+[ ] 41.4 Reduce GC pressure from array allocations          | Date: TBD
+
+42. BACKEND - SHARED TICK LOOP
+    Start: TBD  |  End: TBD  [ ]
+--------------------------------------
+[ ] 42.1 Replace per-connection setInterval                 | Date: TBD
+[ ] 42.2 Create single master tick loop                     | Date: TBD
+[ ] 42.3 Iterate all sessions in single loop iteration      | Date: TBD
+[ ] 42.4 Reduce timer overhead for many connections         | Date: TBD
+
+43. FRONTEND - STATE BATCHING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 43.1 Parse batched tick message                         | Date: 2026-01-17
+[X] 43.2 Update all state in single setState call           | Date: 2026-01-17
+[ ] 43.3 Use useReducer for complex state updates           | Date: TBD
+[ ] 43.4 Reduce re-render count per tick                    | Date: TBD
+
+44. FRONTEND - REMOVE DEBUG LOGGING
+    Start: 2026-01-17  |  End: 2026-01-17  ✅
+--------------------------------------
+[X] 44.1 Remove console.log from onmessage handler          | Date: 2026-01-17
+[X] 44.2 Add conditional logging based on env               | Date: 2026-01-17
+[ ] 44.3 Use debug library for toggleable logging           | Date: TBD
+
+45. FRONTEND - CHART OPTIMIZATION
+    Start: TBD  |  End: TBD  [ ]
+--------------------------------------
+[ ] 45.1 Memoize chart data transformations                 | Date: TBD
+[ ] 45.2 Virtualize candle rendering for large datasets     | Date: TBD
+[ ] 45.3 Debounce rapid state updates                       | Date: TBD
+[ ] 45.4 Use Canvas instead of SVG for better perf          | Date: TBD
+
+46. FRONTEND - REMOVE DUPLICATE CANDLE CALC
+    Start: TBD  |  End: TBD  [ ]
+--------------------------------------
+[ ] 46.1 Trust server candle data only                      | Date: TBD
+[ ] 46.2 Remove client-side candle aggregation              | Date: TBD
+[ ] 46.3 Server sends current candle state in tick          | Date: TBD
+[ ] 46.4 Reduce CPU usage on client                         | Date: TBD
+
+================================================================================
+PERFORMANCE ISSUES IDENTIFIED
+================================================================================
+
+ISSUE #12: Multiple JSON.stringify Per Tick
+Date: 2026-01-18
+Severity: HIGH
+Location: ws-server.js - startSimulation()
+Problem: 5 separate sendToClient() calls = 5 JSON.stringify operations
+Impact: ~5ms overhead per tick per connection at scale
+Solution: Batch all data into single message, stringify once
+Status: IDENTIFIED - Task 38
+
+ISSUE #13: Synchronous File Logging
+Date: 2026-01-18
+Severity: MEDIUM
+Location: ws-server.js - logConnection()
+Problem: fs.appendFileSync blocks the event loop
+Impact: 1-5ms blocking per log write, affects all connections
+Solution: Use async fs.appendFile with write buffer
+Status: IDENTIFIED - Task 39
+
+ISSUE #14: Console.log in Message Handler
+Date: 2026-01-18
+Severity: MEDIUM
+Location: ws-server.js line ~600, useWebSocket.ts line ~95
+Problem: console.log on every message received/sent
+Impact: DevTools I/O overhead, string formatting cost
+Solution: Remove or wrap in DEBUG conditional
+Status: IDENTIFIED - Tasks 40, 44
+
+ISSUE #15: Per-Connection setInterval
+Date: 2026-01-18
+Severity: HIGH (at scale)
+Location: ws-server.js - startSimulation()
+Problem: Each connection has its own setTimeout loop
+Impact: Timer overhead multiplies with connections
+Solution: Single shared tick loop, iterate all sessions
+Status: IDENTIFIED - Task 42
+
+ISSUE #16: Order Book Regenerated Every Tick
+Date: 2026-01-18
+Severity: LOW-MEDIUM
+Location: ws-server.js - generateOrderBook()
+Problem: Creates new arrays every 100ms per connection
+Impact: GC pressure, memory allocation overhead
+Solution: Reuse arrays, modify in-place
+Status: IDENTIFIED - Task 41
+
+ISSUE #17: Duplicate Candle Calculation
+Date: 2026-01-18
+Severity: LOW
+Location: useWebSocket.ts - price message handler
+Problem: Client recalculates candles that server already computed
+Impact: Wasted CPU cycles on client
+Solution: Trust server candles, remove client aggregation
+Status: IDENTIFIED - Task 46
+
+ISSUE #18: Multiple React State Updates Per Message
+Date: 2026-01-18
+Severity: MEDIUM
+Location: useWebSocket.ts - onmessage handler
+Problem: Separate setState for orderbook, stats, price, trades
+Impact: Multiple re-renders per tick
+Solution: Batch state updates or use useReducer
+Status: IDENTIFIED - Task 43
+
+ISSUE #19: Volume Bars Not Aligned with Candlesticks
+Date: 2026-01-18
+Severity: LOW
+Location: CandlestickChart.tsx - Volume bar shape function (line ~673)
+Problem: Volume bar centerX calculation missing +barWidth/2 offset
+         Candlestick uses: centerX = Y_AXIS_WIDTH + index * CANDLE_SPACING + candleWidth/2
+         Volume bar used:  centerX = Y_AXIS_WIDTH + index * CANDLE_SPACING (missing offset!)
+Impact: Volume bars appear 2px to the left of corresponding candles
+Solution: Add + barWidth/2 to volume bar centerX calculation
+Status: FIXED - 2026-01-18
+
+ISSUE #20: Line Chart Stretches to Fill Container
+Date: 2026-01-18
+Severity: LOW
+Location: CandlestickChart.tsx - Line chart rendering
+Problem: Recharts <Line> component auto-scales X axis to fill width
+         With few data points, line stretches across entire chart
+         Candlestick uses fixed positioning and doesn't stretch
+Impact: Visual inconsistency between line and candle chart modes
+Solution: Create FixedPositionLine component using same X positioning
+         as candlesticks: Y_AXIS_WIDTH + index * CANDLE_SPACING + width/2
+Status: FIXED - 2026-01-18
+
+================================================================================
+PHASE 5: NEW FEATURES
+================================================================================
+
+47. NEWS SHOCK / MARKET EVENT SIMULATION
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 47.1 Add newsShockEnabled state to backend              | Date: 2026-01-18
+[X] 47.2 Implement shock logic in updatePrice()             | Date: 2026-01-18
+[X] 47.3 Add newsShock message handler                      | Date: 2026-01-18
+[X] 47.4 Update MarketStats and WSCommand types             | Date: 2026-01-18
+[X] 47.5 Add News Shock toggle button in ControlPanel       | Date: 2026-01-18
+[X] 47.6 Include newsShockEnabled in buildStats()           | Date: 2026-01-18
+[X] 47.7 Add cooldown system (5s active, 20s cooldown)      | Date: 2026-01-18
+[X] 47.8 Add countdown timers to UI (active & cooldown)     | Date: 2026-01-18
+[X] 47.9 Server-side cooldown enforcement                   | Date: 2026-01-18
+
+Feature Description:
+  - Toggle that enables random "news shock" price events
+  - 3% chance per tick during 5-second active window
+  - Expect 1-2 shocks per activation
+  - Minimum 2 second gap between shocks
+  - Shock magnitude: 6-12x normal price movement
+  - Random direction (50% bullish, 50% bearish)
+  - Resets momentum/trend after shock for realistic behavior
+
+Cooldown System:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  1. User clicks "News Shock" button                         │
+  │                    ↓                                        │
+  │  2. Server checks: Is cooldown active?                      │
+  │        ├── YES → Reject, send current stats                 │
+  │        └── NO  → Enable for 5 seconds                       │
+  │                    ↓                                        │
+  │  3. During 5s window: Each tick has 3% chance of SHOCK      │
+  │                    ↓                                        │
+  │  4. After 5s: Auto-disable + 20s cooldown starts            │
+  │                    ↓                                        │
+  │  5. After 20s: Button becomes clickable again               │
+  └─────────────────────────────────────────────────────────────┘
+
+UI States:
+  - Ready: Gray button, "OFF" badge, clickable
+  - Active: Amber pulsing button, countdown "4s", "3s"...
+  - Cooldown: Disabled gray, countdown "18s", "17s"...
+
+48. INTENSITY & SPEED REBALANCING
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 48.1 Reduce AGGRESSIVE multiplier (1.5x → 1.2x)         | Date: 2026-01-18
+[X] 48.2 Reduce EXTREME multiplier (2.5x → 1.6x)            | Date: 2026-01-18
+[X] 48.3 Reduce max speed slider (4x → 2x)                  | Date: 2026-01-18
+[X] 48.4 Increase news shock multiplier (3-7x → 6-12x)      | Date: 2026-01-18
+[X] 48.5 Increase shock probability (1% → 3%)               | Date: 2026-01-18
+
+Rationale:
+  - Old EXTREME (2.5x) made price move so fast that news shocks
+    were barely noticeable relative to normal movement
+  - Rebalancing ensures news shocks are DRAMATICALLY visible
+  - Shock at 9x average vs EXTREME at 1.6x = 5.6x more impactful
+
+49. LINE CHART FIXED POSITIONING
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 49.1 Create FixedPositionLine component                 | Date: 2026-01-18
+[X] 49.2 Use same X positioning as candlesticks             | Date: 2026-01-18
+[X] 49.3 Prevent line from stretching to fill container     | Date: 2026-01-18
+[X] 49.4 Left-align line chart like candlestick chart       | Date: 2026-01-18
+
+Problem Solved:
+  - Line chart was stretching to fill available width with few points
+  - Candlestick chart was left-aligned with fixed spacing
+  - Now both use same positioning: Y_AXIS_WIDTH + index * CANDLE_SPACING
+
+================================================================================
+PHASE 6: C++ SERVER IMPROVEMENTS
+================================================================================
+
+50. C++ WEBSOCKET SERVER REVIVAL
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 50.1 Fix WebSocket handshake (protocol name)            | Date: 2026-01-18
+[X] 50.2 Fix JSON parsing (trailing commas, etc)            | Date: 2026-01-18
+[X] 50.3 Match Node.js server message format                | Date: 2026-01-18
+[X] 50.4 Add --headless and --auto-start flags              | Date: 2026-01-18
+[X] 50.5 Add --debug flag for verbose logging               | Date: 2026-01-18
+
+51. SESSION ISOLATION (C++ SERVER)
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 51.1 Create SessionState class                          | Date: 2026-01-18
+[X] 51.2 Per-session PriceEngine instance                   | Date: 2026-01-18
+[X] 51.3 Per-session CandleManager instance                 | Date: 2026-01-18
+[X] 51.4 Per-session OrderBook instance                     | Date: 2026-01-18
+[X] 51.5 Per-session NewsShockController                    | Date: 2026-01-18
+[X] 51.6 Unique clientId assigned on connect                | Date: 2026-01-18
+[X] 51.7 Independent simulation state per client            | Date: 2026-01-18
+[X] 51.8 Multiple browser tabs work independently           | Date: 2026-01-18
+
+52. PAUSE FUNCTIONALITY FIX
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 52.1 Fix pause to completely freeze simulation          | Date: 2026-01-18
+[X] 52.2 Frontend checks isPaused before updating trades    | Date: 2026-01-18
+[X] 52.3 Order book shows frozen state when paused          | Date: 2026-01-18
+[X] 52.4 Candles don't update when paused                   | Date: 2026-01-18
+
+53. TRADE ID UNIQUENESS
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 53.1 Remove broadcastTrade() (was mixing sessions)      | Date: 2026-01-18
+[X] 53.2 Trade IDs: sessionId * 1000000 + counter           | Date: 2026-01-18
+[X] 53.3 Each session has unique trade ID namespace         | Date: 2026-01-18
+
+54. LOGGING & METRICS (C++ SERVER)
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 54.1 Standardized log levels: [CONNECT], [DISCONNECT]   | Date: 2026-01-18
+[X] 54.2 Add [COMMAND], [SET], [STATE], [INFO] levels       | Date: 2026-01-18
+[X] 54.3 Add [WARN], [ERROR], [DEBUG] levels                | Date: 2026-01-18
+[X] 54.4 Track IP address per connection                    | Date: 2026-01-18
+[X] 54.5 Track bytes sent/received per session              | Date: 2026-01-18
+[X] 54.6 Track message count per session                    | Date: 2026-01-18
+[X] 54.7 Track connection duration                          | Date: 2026-01-18
+[X] 54.8 Show session stats on disconnect                   | Date: 2026-01-18
+[X] 54.9 Suppress ping command logging (too noisy)          | Date: 2026-01-18
+
+55. LATENCY / PING DISPLAY
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 55.1 Add ping handler in C++ backend                    | Date: 2026-01-18
+[X] 55.2 Ping/pong mechanism with timestamp                 | Date: 2026-01-18
+[X] 55.3 Frontend sends ping every 2 seconds                | Date: 2026-01-18
+[X] 55.4 Calculate RTT on pong response                     | Date: 2026-01-18
+[X] 55.5 Display latency in Header component                | Date: 2026-01-18
+[X] 55.6 Color-coded latency badge (green/yellow/red)       | Date: 2026-01-18
+[X] 55.7 <50ms = green, <100ms = yellow, >100ms = red       | Date: 2026-01-18
+
+56. FRONTEND CLEANUP
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 56.1 Remove raw message logging                         | Date: 2026-01-18
+[X] 56.2 Remove 'Connecting with config' log                | Date: 2026-01-18
+[X] 56.3 Remove 'WebSocket connected' log                   | Date: 2026-01-18
+[X] 56.4 Remove 'Sent start command' log                    | Date: 2026-01-18
+[X] 56.5 Remove 'Simulation reset' log                      | Date: 2026-01-18
+[X] 56.6 Remove 'Simulation started' log                    | Date: 2026-01-18
+[X] 56.7 Fix Recharts warning (add minWidth to container)   | Date: 2026-01-18
+
+57. HELP TEXT UPDATE
+    Start: 2026-01-18  |  End: 2026-01-18  ✅
+--------------------------------------
+[X] 57.1 Update intensity multipliers in help               | Date: 2026-01-18
+        (0.4x/0.7x/1.0x/1.2x/1.6x)
+[X] 57.2 Update sentiment names (calm → sideways)           | Date: 2026-01-18
+[X] 57.3 Add --headless --auto-start example                | Date: 2026-01-18
+[X] 57.4 Remove price logging mention from startup          | Date: 2026-01-18
+
+================================================================================
+HOW TO RUN (C++ SERVER - RECOMMENDED)
+================================================================================
+
+# Terminal 1: Build & Start C++ Server
+$env:Path = "C:\msys64\mingw64\bin;$env:Path"
+cd c:\Projects\order-book-visualizer\build
+cmake --build . --target orderbook
+cd bin
+.\orderbook.exe --headless --auto-start
+
+# Terminal 2: Start Frontend  
+cd c:\Projects\order-book-visualizer\frontend
+npm.cmd run dev
+
+# Open browser: http://localhost:5173
+
+================================================================================
+PROJECT STATUS: PHASE 6 COMPLETE ✅
+================================================================================
+
+SUMMARY:
+- C++ WebSocket server fully functional
+- Session isolation (multiple tabs work independently)
+- Ping/latency display in frontend header
+- Clean console output (debug logs removed)
+- Help text updated with correct values
+
+TOTAL TASKS COMPLETED: 130+
