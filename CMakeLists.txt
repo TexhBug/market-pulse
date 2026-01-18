@@ -183,14 +183,13 @@ if(WEBSOCKETS_FOUND)
             bcrypt      # Windows Crypto
         )
     else()
-        # Linux/Unix linking
-        target_link_libraries(orderbook PRIVATE 
-            websockets
-            ssl
-            crypto
-            ev
-            /usr/lib/x86_64-linux-gnu/libuv.so.1
-        )
+        # Linux/Unix linking - use pkg-config for proper flags
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(LWS REQUIRED libwebsockets)
+        pkg_check_modules(OPENSSL REQUIRED openssl)
+        
+        target_include_directories(orderbook PRIVATE ${LWS_INCLUDE_DIRS})
+        target_link_libraries(orderbook PRIVATE ${LWS_LIBRARIES} ${OPENSSL_LIBRARIES})
     endif()
     
     target_compile_definitions(orderbook PRIVATE WEBSOCKET_ENABLED=1)
