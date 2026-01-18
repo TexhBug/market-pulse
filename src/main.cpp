@@ -1078,9 +1078,11 @@ int main(int argc, char* argv[]) {
     });
     
     if (wsServer.start()) {
-        std::cout << "[Server] [INFO] WebSocket server running on ws://localhost:8080\n";
+        std::cout << "[Server] [INFO] WebSocket server running on ws://0.0.0.0:" << wsPort << std::endl;
+        std::cout.flush();
     } else {
         std::cout << "[Server] [ERROR] Failed to start WebSocket server\n";
+        std::cout.flush();
     }
     
     // If waiting for WebSocket, pause until start signal

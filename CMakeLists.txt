@@ -85,21 +85,45 @@ find_package(Threads REQUIRED)
 # ============================================================================
 # Required for frontend communication
 
-# Find libwebsockets - installed via MSYS2
-# Headers: C:/msys64/mingw64/include/libwebsockets.h
-# Library: C:/msys64/mingw64/lib/libwebsockets_static.a
+if(WIN32)
+    # Find libwebsockets - installed via MSYS2
+    # Headers: C:/msys64/mingw64/include/libwebsockets.h
+    # Library: C:/msys64/mingw64/lib/libwebsockets_static.a
+    set(WEBSOCKETS_INCLUDE_DIR "C:/msys64/mingw64/include")
+    set(WEBSOCKETS_LIBRARY "C:/msys64/mingw64/lib/libwebsockets_static.a")
+    set(OPENSSL_ROOT "C:/msys64/mingw64")
 
-set(WEBSOCKETS_INCLUDE_DIR "C:/msys64/mingw64/include")
-set(WEBSOCKETS_LIBRARY "C:/msys64/mingw64/lib/libwebsockets_static.a")
-set(OPENSSL_ROOT "C:/msys64/mingw64")
-
-# Check if libwebsockets is available
-if(EXISTS ${WEBSOCKETS_LIBRARY})
-    set(WEBSOCKETS_FOUND TRUE)
-    message(STATUS "Found libwebsockets: ${WEBSOCKETS_LIBRARY}")
+    # Check if libwebsockets is available
+    if(EXISTS ${WEBSOCKETS_LIBRARY})
+        set(WEBSOCKETS_FOUND TRUE)
+        message(STATUS "Found libwebsockets: ${WEBSOCKETS_LIBRARY}")
+    else()
+        set(WEBSOCKETS_FOUND FALSE)
+        message(WARNING "libwebsockets not found - WebSocket server will be disabled")
+    endif()
 else()
-    set(WEBSOCKETS_FOUND FALSE)
-    message(WARNING "libwebsockets not found - WebSocket server will be disabled")
+    # Linux - use system libwebsockets
+    find_path(WEBSOCKETS_INCLUDE_DIR libwebsockets.h)
+    find_library(WEBSOCKETS_LIBRARY NAMES websockets)
+    
+    if(WEBSOCKETS_INCLUDE_DIR AND WEBSOCKETS_LIBRARY)
+        set(WEBSOCKETS_FOUND TRUE)
+        message(STATUS "Found libwebsockets: ${WEBSOCKETS_LIBRARY}")
+    else()
+        # Try pkg-config
+        find_package(PkgConfig)
+        if(PkgConfig_FOUND)
+            pkg_check_modules(WEBSOCKETS libwebsockets)
+            if(WEBSOCKETS_FOUND)
+                message(STATUS "Found libwebsockets via pkg-config")
+            endif()
+        endif()
+        
+        if(NOT WEBSOCKETS_FOUND)
+            set(WEBSOCKETS_FOUND FALSE)
+            message(WARNING "libwebsockets not found - WebSocket server will be disabled")
+        endif()
+    endif()
 endif()
 
 # ============================================================================
@@ -147,14 +171,26 @@ target_link_libraries(orderbook PRIVATE Threads::Threads)
 # Link WebSocket library if available
 if(WEBSOCKETS_FOUND)
     target_include_directories(orderbook PRIVATE ${WEBSOCKETS_INCLUDE_DIR})
-    target_link_libraries(orderbook PRIVATE 
-        ${WEBSOCKETS_LIBRARY}
-        ${OPENSSL_ROOT}/lib/libssl.a
-        ${OPENSSL_ROOT}/lib/libcrypto.a
-        ws2_32      # Windows Sockets
-        crypt32     # Windows Crypto
-        bcrypt      # Windows Crypto
-    )
+    
+    if(WIN32)
+        # Windows-specific linking
+        target_link_libraries(orderbook PRIVATE 
+            ${WEBSOCKETS_LIBRARY}
+            ${OPENSSL_ROOT}/lib/libssl.a
+            ${OPENSSL_ROOT}/lib/libcrypto.a
+            ws2_32      # Windows Sockets
+            crypt32     # Windows Crypto
+            bcrypt      # Windows Crypto
+        )
+    else()
+        # Linux/Unix linking
+        target_link_libraries(orderbook PRIVATE 
+            websockets
+            ssl
+            crypto
+        )
+    endif()
+    
     target_compile_definitions(orderbook PRIVATE WEBSOCKET_ENABLED=1)
 endif()
 
