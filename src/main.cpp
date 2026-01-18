@@ -968,7 +968,14 @@ int main(int argc, char* argv[]) {
     
     // Start WebSocket server FIRST if waiting for frontend
     #ifdef WEBSOCKET_ENABLED
-    WebSocketServer wsServer(8080);
+    // Read PORT from environment (for cloud deployment) or use default 8080
+    int wsPort = 8080;
+    const char* portEnv = std::getenv("PORT");
+    if (portEnv) {
+        wsPort = std::atoi(portEnv);
+        std::cout << "[Server] Using PORT from environment: " << wsPort << "\n";
+    }
+    WebSocketServer wsServer(wsPort);
     g_wsServer = &wsServer;
     
     // Set up command callback for WebSocket - now handles per-session state

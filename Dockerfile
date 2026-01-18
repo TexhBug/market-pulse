@@ -36,7 +36,7 @@ WORKDIR /app
 COPY --from=builder /app/build/bin/orderbook ./orderbook
 
 # Render uses PORT env variable
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=10000
+EXPOSE 10000
 
 CMD ["./orderbook", "--headless", "--auto-start"]
