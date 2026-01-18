@@ -28,7 +28,7 @@ RUN mkdir build && cd build && \
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    libwebsockets19 \
+    libwebsockets16 \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
