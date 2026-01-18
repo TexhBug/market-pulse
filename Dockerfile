@@ -35,8 +35,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY --from=builder /app/build/bin/orderbook ./orderbook
 
-# Render uses PORT env variable
-ENV PORT=10000
+# Render uses PORT env variable - reads from env at runtime
 EXPOSE 10000
 
-CMD ["./orderbook", "--headless", "--auto-start"]
+# Use shell form to see output immediately
+CMD ./orderbook --headless --auto-start
