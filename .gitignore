@@ -19,9 +19,11 @@ frontend/node_modules/
 
 # Environment files
 .env
+.env.*
 .env.local
 .env.*.local
 frontend/.env
+frontend/.env.*
 frontend/.env.local
 
 # Logs

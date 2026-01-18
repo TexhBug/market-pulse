@@ -53,7 +53,7 @@ export function Header({ connected, latency, symbol, onBack }: HeaderProps) {
                 <Wifi className="text-green-400" size={18} />
                 <span className="text-green-400 text-sm font-medium">Connected</span>
               </div>
-              {latency !== null && (
+              {latency !== null && latency !== undefined && (
                 <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${
                   latency < 50 ? 'bg-green-500/10 border-green-500/30 text-green-400' :
                   latency < 100 ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' :
