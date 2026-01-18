@@ -188,8 +188,8 @@ if(WEBSOCKETS_FOUND)
             websockets
             ssl
             crypto
-            ev          # libev - required by libwebsockets on Ubuntu
-            uv          # libuv - required by libwebsockets on Ubuntu
+            ev
+            /usr/lib/x86_64-linux-gnu/libuv.so.1
         )
     endif()
     
