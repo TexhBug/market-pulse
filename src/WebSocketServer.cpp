@@ -369,13 +369,14 @@ bool WebSocketServer::start() {
     memset(&info, 0, sizeof(info));
     
     info.port = m_port;
-    info.iface = NULL;  // Bind to 0.0.0.0 (all interfaces) - required for cloud deployment
+    info.iface = "0.0.0.0";  // Explicitly bind to all interfaces - required for cloud deployment
     info.protocols = protocols;
     info.gid = -1;
     info.uid = -1;
     info.options = 0;  // No special options - allow plain WebSocket
 
-    std::cout << "[Server] Starting WebSocket server on port " << m_port << " (binding to 0.0.0.0)\n";
+    std::cout << "[Server] Starting WebSocket server on 0.0.0.0:" << m_port << std::endl;
+    std::cout.flush();  // Force output immediately
 
     m_context = lws_create_context(&info);
     if (!m_context) {

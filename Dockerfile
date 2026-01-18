@@ -35,7 +35,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY --from=builder /app/build/bin/orderbook ./orderbook
 
-# Render uses PORT env variable - reads from env at runtime
+# Render sets PORT env var (default 10000)
+ENV PORT=10000
 EXPOSE 10000
 
 # Use shell form to see output immediately
