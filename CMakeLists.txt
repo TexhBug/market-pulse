@@ -189,7 +189,12 @@ if(WEBSOCKETS_FOUND)
         pkg_check_modules(OPENSSL REQUIRED openssl)
         
         target_include_directories(orderbook PRIVATE ${LWS_INCLUDE_DIRS})
-        target_link_libraries(orderbook PRIVATE ${LWS_LIBRARIES} ${OPENSSL_LIBRARIES})
+        target_link_libraries(orderbook PRIVATE 
+            ${LWS_LIBRARIES} 
+            ${OPENSSL_LIBRARIES}
+            ev      # libwebsockets dependency
+            uv      # libwebsockets dependency
+        )
     endif()
     
     target_compile_definitions(orderbook PRIVATE WEBSOCKET_ENABLED=1)
