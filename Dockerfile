@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     libwebsockets-dev \
     libssl-dev \
+    libev-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy source
@@ -30,6 +31,7 @@ FROM ubuntu:22.04
 RUN apt-get update && apt-get install -y \
     libwebsockets16 \
     libssl3 \
+    libev4 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
