@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libwebsockets-dev \
     libssl-dev \
     libev-dev \
+    libuv1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy source
@@ -32,6 +33,7 @@ RUN apt-get update && apt-get install -y \
     libwebsockets16 \
     libssl3 \
     libev4 \
+    libuv1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
