@@ -172,20 +172,20 @@ export function LandingPage() {
           {/* Sentiment Selection */}
           <div className="mb-8">
             <label className="block text-sm font-medium text-slate-400 mb-3">Market Sentiment</label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {sentiments.map((s) => (
                 <button
                   key={s.value}
                   onClick={() => setSentiment(s.value)}
-                  className={`p-4 rounded-xl border-2 transition-all ${
+                  className={`p-2 sm:p-4 rounded-xl border-2 transition-all flex flex-col items-center justify-center overflow-hidden ${
                     sentiment === s.value
                       ? 'border-green-500 bg-green-500/10'
                       : 'border-slate-600 hover:border-slate-500 bg-slate-700/30'
                   }`}
                 >
-                  <div className="text-2xl mb-1">{s.icon}</div>
-                  <div className="font-medium">{s.label}</div>
-                  <div className="text-xs text-slate-400">{s.description}</div>
+                  <div className="text-xl sm:text-2xl mb-1">{s.icon}</div>
+                  <div className="font-medium text-sm sm:text-base truncate w-full text-center">{s.label}</div>
+                  <div className="text-[10px] sm:text-xs text-slate-400 truncate w-full text-center">{s.description}</div>
                 </button>
               ))}
             </div>
@@ -199,14 +199,14 @@ export function LandingPage() {
                 <button
                   key={i.value}
                   onClick={() => setIntensity(i.value)}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
+                  className={`py-2 sm:py-3 px-2 sm:px-4 rounded-lg border-2 transition-all flex flex-col items-center justify-center overflow-hidden ${
                     intensity === i.value
                       ? 'border-blue-500 bg-blue-500/10'
                       : 'border-slate-600 hover:border-slate-500 bg-slate-700/30'
                   }`}
                 >
-                  <div className="font-medium text-sm">{i.label}</div>
-                  <div className="text-xs text-slate-400">{i.multiplier}</div>
+                  <div className="font-medium text-xs sm:text-sm truncate w-full text-center">{i.label}</div>
+                  <div className="text-[10px] sm:text-xs text-slate-400 truncate w-full text-center">{i.multiplier}</div>
                 </button>
               ))}
             </div>
@@ -215,14 +215,14 @@ export function LandingPage() {
                 <button
                   key={i.value}
                   onClick={() => setIntensity(i.value)}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
+                  className={`py-2 sm:py-3 px-2 sm:px-4 rounded-lg border-2 transition-all flex flex-col items-center justify-center overflow-hidden ${
                     intensity === i.value
                       ? 'border-blue-500 bg-blue-500/10'
                       : 'border-slate-600 hover:border-slate-500 bg-slate-700/30'
                   }`}
                 >
-                  <div className="font-medium text-sm">{i.label}</div>
-                  <div className="text-xs text-slate-400">{i.multiplier}</div>
+                  <div className="font-medium text-xs sm:text-sm truncate w-full text-center">{i.label}</div>
+                  <div className="text-[10px] sm:text-xs text-slate-400 truncate w-full text-center">{i.multiplier}</div>
                 </button>
               ))}
             </div>
