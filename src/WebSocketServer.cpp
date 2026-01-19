@@ -449,19 +449,50 @@ void WebSocketServer::stop() {
 
 // Maximum connection duration: 60 minutes (to prevent free compute exhaustion)
 static constexpr int64_t MAX_CONNECTION_DURATION_MS = 60 * 60 * 1000;
+// Connection summary display interval: 30 seconds
+static constexpr int64_t SUMMARY_INTERVAL_MS = 30 * 1000;
+
+// Forward declaration of formatDuration (defined later in file)
+static std::string formatDuration(int64_t ms);
 
 void WebSocketServer::serverThread() {
     int64_t lastTimeoutCheck = 0;
+    int64_t lastSummaryDisplay = 0;
     
     while (m_running) {
         // Service WebSocket events - this handles all callbacks
         lws_service(m_context, 50);  // 50ms timeout
         
-        // Check for connection timeouts every 10 seconds
         auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count();
         
-        if (now - lastTimeoutCheck > 10000) {  // Check every 10 seconds
+        // Display connection summary every 30 seconds (only if there are active connections)
+        if (now - lastSummaryDisplay > SUMMARY_INTERVAL_MS) {
+            lastSummaryDisplay = now;
+            
+            std::lock_guard<std::mutex> lock(m_clientsMutex);
+            if (!m_clients.empty()) {
+                std::cout << "\n[Server] ======= CONNECTION SUMMARY =======\n";
+                std::cout << "[Server] Total connections: " << m_metrics.totalConnections 
+                          << " | Active: " << m_clients.size() << "\n";
+                std::cout << "[Server] ---------------------------------\n";
+                
+                for (const auto& [id, client] : m_clients) {
+                    int64_t durationMs = now - client.connectedAt;
+                    int64_t remainingMs = MAX_CONNECTION_DURATION_MS - durationMs;
+                    
+                    std::cout << "[Server] Session " << id 
+                              << " | IP: " << client.ipAddress
+                              << " | Active: " << formatDuration(durationMs)
+                              << " | Remaining: " << formatDuration(remainingMs)
+                              << "\n";
+                }
+                std::cout << "[Server] =====================================\n\n";
+            }
+        }
+        
+        // Check for connection timeouts every 10 seconds
+        if (now - lastTimeoutCheck > 10000) {
             lastTimeoutCheck = now;
             
             std::vector<std::pair<uint32_t, struct lws*>> expiredClients;
