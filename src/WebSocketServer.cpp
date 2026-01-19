@@ -337,10 +337,41 @@ struct PerSessionData {
 // Client ID counter
 static std::atomic<uint32_t> g_nextClientId{1};
 
-// Protocol definition - use "lws-minimal" which is commonly accepted
+// HTTP callback for health check endpoint (keeps Render.com free tier awake)
+static int http_callback(struct lws* wsi, enum lws_callback_reasons reason,
+                         void* /*user*/, void* /*in*/, size_t /*len*/) {
+    switch (reason) {
+        case LWS_CALLBACK_HTTP: {
+            // Respond to any HTTP request with a simple health check
+            const char* response = "HTTP/1.1 200 OK\r\n"
+                                   "Content-Type: application/json\r\n"
+                                   "Access-Control-Allow-Origin: *\r\n"
+                                   "Content-Length: 15\r\n"
+                                   "\r\n"
+                                   "{\"status\":\"ok\"}";
+            lws_write(wsi, (unsigned char*)response, strlen(response), LWS_WRITE_HTTP);
+            // Return -1 to close connection after response
+            return -1;
+        }
+        default:
+            break;
+    }
+    return 0;
+}
+
+// Protocol definition - HTTP first for health checks, then WebSocket
 static struct lws_protocols protocols[] = {
     {
-        "lws-minimal",  // Protocol name
+        "http",         // HTTP protocol for health checks
+        http_callback,
+        0,              // per-session data size
+        0,              // rx buffer size
+        0,              // id
+        NULL,           // user pointer
+        0               // tx packet size
+    },
+    {
+        "lws-minimal",  // WebSocket protocol name
         WebSocketServer::callback,
         sizeof(PerSessionData),
         65536,  // rx buffer size
@@ -374,6 +405,12 @@ bool WebSocketServer::start() {
     info.gid = -1;
     info.uid = -1;
     info.options = 0;  // No special options - allow plain WebSocket
+    
+    // WebSocket keepalive settings to prevent connection timeout
+    info.ka_time = 60;         // Start keepalive after 60 seconds of inactivity
+    info.ka_probes = 3;        // Send 3 probes before giving up
+    info.ka_interval = 10;     // 10 seconds between probes
+    info.timeout_secs = 0;     // Disable protocol timeout (we handle our own)
 
     std::cout << "[Server] Starting WebSocket server on 0.0.0.0:" << m_port << std::endl;
     std::cout.flush();  // Force output immediately
@@ -410,10 +447,48 @@ void WebSocketServer::stop() {
     std::cout << "WebSocket server stopped\n";
 }
 
+// Maximum connection duration: 60 minutes (to prevent free compute exhaustion)
+static constexpr int64_t MAX_CONNECTION_DURATION_MS = 60 * 60 * 1000;
+
 void WebSocketServer::serverThread() {
+    int64_t lastTimeoutCheck = 0;
+    
     while (m_running) {
         // Service WebSocket events - this handles all callbacks
         lws_service(m_context, 50);  // 50ms timeout
+        
+        // Check for connection timeouts every 10 seconds
+        auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count();
+        
+        if (now - lastTimeoutCheck > 10000) {  // Check every 10 seconds
+            lastTimeoutCheck = now;
+            
+            std::vector<std::pair<uint32_t, struct lws*>> expiredClients;
+            {
+                std::lock_guard<std::mutex> lock(m_clientsMutex);
+                for (auto& [id, client] : m_clients) {
+                    int64_t connectionDuration = now - client.connectedAt;
+                    if (connectionDuration >= MAX_CONNECTION_DURATION_MS) {
+                        expiredClients.push_back({id, client.wsi});
+                    }
+                }
+            }
+            
+            // Send timeout notification and close expired connections
+            for (auto& [clientId, wsi] : expiredClients) {
+                std::cout << "[Session " << clientId << "] Connection timeout (60 min limit reached)\n";
+                
+                // Send a timeout message before closing
+                std::string timeoutMsg = R"({"type":"timeout","message":"Session expired after 60 minutes. Please reconnect to continue."})";
+                sendToClient(clientId, timeoutMsg);
+                
+                // Request close from lws
+                lws_close_reason(wsi, LWS_CLOSE_STATUS_NORMAL,
+                    (unsigned char*)"Session timeout", 15);
+                lws_callback_on_writable(wsi);
+            }
+        }
     }
 }
 

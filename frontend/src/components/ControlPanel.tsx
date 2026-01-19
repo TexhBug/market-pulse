@@ -1,13 +1,28 @@
-import { Pause, Play, RotateCcw, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Pause, Play, RotateCcw, Zap, Clock } from 'lucide-react';
 import type { MarketStats, WSCommand, Sentiment, Intensity } from '../types';
 import { SENTIMENTS, INTENSITIES } from '../types';
 
 interface ControlPanelProps {
   stats: MarketStats | null;
   onCommand: (command: WSCommand) => void;
+  sessionStartTime?: number | null;  // Timestamp when session started
 }
 
-export function ControlPanel({ stats, onCommand }: ControlPanelProps) {
+// Format time as mm:ss or hh:mm:ss
+function formatTime(seconds: number): string {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+const SESSION_LIMIT_SECONDS = 60 * 60; // 60 minutes
+
+export function ControlPanel({ stats, onCommand, sessionStartTime }: ControlPanelProps) {
   const currentSentiment = stats?.sentiment || 'NEUTRAL';
   const currentIntensity = stats?.intensity || 'NORMAL';
   const spread = stats?.spread || 0.05;
@@ -46,9 +61,48 @@ export function ControlPanel({ stats, onCommand }: ControlPanelProps) {
     onCommand({ type: 'newsShock', value: !newsShockEnabled });
   };
 
+  // Session timer state
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  
+  useEffect(() => {
+    if (!sessionStartTime) {
+      setElapsedSeconds(0);
+      return;
+    }
+    
+    const updateElapsed = () => {
+      const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+      setElapsedSeconds(Math.min(elapsed, SESSION_LIMIT_SECONDS));
+    };
+    
+    updateElapsed();
+    const interval = setInterval(updateElapsed, 1000);
+    return () => clearInterval(interval);
+  }, [sessionStartTime]);
+  
+  const remainingSeconds = Math.max(0, SESSION_LIMIT_SECONDS - elapsedSeconds);
+  const isLowTime = remainingSeconds < 5 * 60;
+  const isCriticalTime = remainingSeconds < 1 * 60;
+
   return (
     <div className="bg-slate-800 rounded-lg p-2 sm:p-4 h-full flex flex-col overflow-hidden">
-      <h2 className="text-sm sm:text-lg font-semibold text-white mb-2 sm:mb-4 truncate">Market Controls</h2>
+      {/* Header with session timer */}
+      <div className="flex items-center justify-between mb-2 sm:mb-4">
+        <h2 className="text-sm sm:text-lg font-semibold text-white truncate">Market Controls</h2>
+        {sessionStartTime && (
+          <div 
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs ${
+              isCriticalTime ? 'bg-red-500/10 border-red-500/30 text-red-400 animate-pulse' :
+              isLowTime ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' :
+              'bg-slate-700/50 border-slate-600/30 text-slate-400'
+            }`}
+            title={`Session expires in ${formatTime(remainingSeconds)} (max 60 min per session)`}
+          >
+            <Clock size={12} />
+            <span className="font-mono">{formatTime(remainingSeconds)}</span>
+          </div>
+        )}
+      </div>
 
       {/* Sentiment */}
       <div className="mb-2 sm:mb-4 flex-shrink-0">

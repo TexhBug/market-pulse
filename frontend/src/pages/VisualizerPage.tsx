@@ -12,7 +12,7 @@ import type { Sentiment, Intensity } from '../types';
 export function VisualizerPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { connected, orderBook, trades, stats, priceHistory, candleCache, currentCandles, sendCommand, requestCandles, connect, disconnect, latency } = useWebSocket();
+  const { connected, sessionTimedOut, sessionStartTime, orderBook, trades, stats, priceHistory, candleCache, currentCandles, sendCommand, requestCandles, connect, disconnect, latency } = useWebSocket();
   const hasConnected = useRef(false);
   const [priceZeroModal, setPriceZeroModal] = useState(false);
 
@@ -26,12 +26,18 @@ export function VisualizerPage() {
     speed: Number(searchParams.get('speed')) || 1,
   };
 
-  // Connect on mount
+  // Connect on mount, disconnect on unmount (important for HMR/hot reload)
   useEffect(() => {
     if (hasConnected.current) return;
     hasConnected.current = true;
     connect(config);
-  }, [connect]);
+    
+    // Cleanup: disconnect when component unmounts (page refresh, HMR, navigation)
+    return () => {
+      disconnect();
+      hasConnected.current = false;
+    };
+  }, [connect, disconnect]);
 
   // Check for price reaching zero
   useEffect(() => {
@@ -54,6 +60,34 @@ export function VisualizerPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white overflow-auto">
+      {/* Session Timeout Modal */}
+      {sessionTimedOut && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-slate-800 border border-amber-500/50 rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-amber-400 mb-2">Session Expired</h2>
+              <p className="text-slate-300 mb-6">
+                Your session has ended after 60 minutes to conserve server resources.
+              </p>
+              <p className="text-slate-400 text-sm mb-6">
+                Click below to start a new session. Your configuration will be preserved.
+              </p>
+              <button
+                onClick={handleRefresh}
+                className="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                Start New Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Price Zero Modal */}
       {priceZeroModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
@@ -106,7 +140,7 @@ export function VisualizerPage() {
       <footer className="p-2 sm:p-4 pb-4 grid grid-cols-12 gap-2 sm:gap-4">
         {/* Controls */}
         <div className="col-span-12 md:col-span-4" style={{ minHeight: '150px' }}>
-          <ControlPanel stats={stats} onCommand={sendCommand} />
+          <ControlPanel stats={stats} onCommand={sendCommand} sessionStartTime={sessionStartTime} />
         </div>
         
         {/* Stats */}

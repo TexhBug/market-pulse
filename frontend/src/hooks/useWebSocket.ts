@@ -4,6 +4,9 @@ import type { OrderBookData, Trade, MarketStats, PricePoint, WSCommand, Sentimen
 // Use environment variable or fallback to localhost
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080';
 
+// Derive HTTP URL from WebSocket URL for keep-alive pings (Render.com free tier workaround)
+const HTTP_URL = WS_URL.replace('wss://', 'https://').replace('ws://', 'http://');
+
 // Initial empty candle cache
 const createEmptyCandleCache = (): CandleCache => ({
   1: [],
@@ -33,6 +36,8 @@ export interface SimulationConfig {
 interface UseWebSocketReturn {
   connected: boolean;
   connecting: boolean;
+  sessionTimedOut: boolean;  // True if session was terminated due to 60-min limit
+  sessionStartTime: number | null;  // Timestamp when session started (for countdown timer)
   latency: number | null;  // Round-trip latency in ms
   orderBook: OrderBookData | null;
   trades: Trade[];
@@ -49,6 +54,8 @@ interface UseWebSocketReturn {
 export function useWebSocket(): UseWebSocketReturn {
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [sessionTimedOut, setSessionTimedOut] = useState(false);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [latency, setLatency] = useState<number | null>(null);
   const [orderBook, setOrderBook] = useState<OrderBookData | null>(null);
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -60,12 +67,24 @@ export function useWebSocket(): UseWebSocketReturn {
   const configRef = useRef<SimulationConfig | null>(null);
 
   const connect = useCallback((config: SimulationConfig) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    // Guard: Don't create new connection if one is already open or connecting
+    if (wsRef.current?.readyState === WebSocket.OPEN || 
+        wsRef.current?.readyState === WebSocket.CONNECTING) {
+      return;
+    }
+    
+    // Close any existing connection that might be in CLOSING state
+    if (wsRef.current) {
+      wsRef.current.onclose = null;  // Prevent auto-reconnect
+      wsRef.current.close();
+      wsRef.current = null;
+    }
     
     setConnecting(true);
     configRef.current = config;
     
     // Reset all state on new connection
+    setSessionTimedOut(false);
     setOrderBook(null);
     setTrades([]);
     setStats(null);
@@ -79,6 +98,7 @@ export function useWebSocket(): UseWebSocketReturn {
     ws.onopen = () => {
       setConnected(true);
       setConnecting(false);
+      setSessionStartTime(Date.now());  // Track session start for countdown timer
       
       // Send start command with configuration
       if (configRef.current) {
@@ -96,18 +116,41 @@ export function useWebSocket(): UseWebSocketReturn {
         }
       }, 2000); // Ping every 2 seconds
       
-      // Store interval ID for cleanup
+      // HTTP keep-alive ping every 14 minutes (Render.com free tier has 15-min idle timeout)
+      // WebSocket messages don't count as "activity" for Render, only HTTP requests do
+      const keepAliveInterval = setInterval(() => {
+        fetch(HTTP_URL, { method: 'GET', mode: 'no-cors' }).catch(() => {
+          // Ignore errors - this is just to keep the service awake
+        });
+      }, 14 * 60 * 1000); // 14 minutes
+      
+      // Store interval IDs for cleanup
       (ws as any)._pingInterval = pingInterval;
+      (ws as any)._keepAliveInterval = keepAliveInterval;
     };
 
     ws.onclose = () => {
       setConnected(false);
       setConnecting(false);
       setLatency(null);
+      setSessionStartTime(null);  // Clear session timer
       
-      // Clear ping interval
+      // Clear intervals
       if ((ws as any)._pingInterval) {
         clearInterval((ws as any)._pingInterval);
+      }
+      if ((ws as any)._keepAliveInterval) {
+        clearInterval((ws as any)._keepAliveInterval);
+      }
+      
+      // Auto-reconnect after 3 seconds if we had a config (unexpected disconnect)
+      if (configRef.current && wsRef.current === ws) {
+        console.log('Connection lost, attempting to reconnect in 3 seconds...');
+        setTimeout(() => {
+          if (configRef.current) {
+            connect(configRef.current);
+          }
+        }, 3000);
       }
     };
 
@@ -276,6 +319,14 @@ export function useWebSocket(): UseWebSocketReturn {
               setLatency(rtt);
               break;
             }
+            case 'timeout': {
+              // Server terminated session due to 60-minute limit
+              console.log('Session timeout:', message.message);
+              setSessionTimedOut(true);
+              // Clear config to prevent auto-reconnect
+              configRef.current = null;
+              break;
+            }
             case 'started':
               break;
           }
@@ -289,6 +340,9 @@ export function useWebSocket(): UseWebSocketReturn {
   }, []);
 
   const disconnect = useCallback(() => {
+    // Clear config to prevent auto-reconnect
+    configRef.current = null;
+    
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
@@ -317,6 +371,8 @@ export function useWebSocket(): UseWebSocketReturn {
   return {
     connected,
     connecting,
+    sessionTimedOut,
+    sessionStartTime,
     latency,
     orderBook,
     trades,
