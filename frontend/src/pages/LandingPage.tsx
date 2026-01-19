@@ -71,7 +71,7 @@ export function LandingPage() {
           <h2 className="text-2xl font-semibold mb-6 text-center">Configure Simulation</h2>
 
           {/* Symbol & Price */}
-          <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-2 gap-6 mb-8 items-start">
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-2">Symbol</label>
               <input
@@ -83,7 +83,10 @@ export function LandingPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-2">Starting Price ($100-$500)</label>
+              <label className="block text-sm font-medium text-slate-400 mb-2">
+                Starting Price
+                <span className="text-slate-500 ml-1 hidden sm:inline">($100-$500)</span>
+              </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
                 <input
@@ -119,6 +122,7 @@ export function LandingPage() {
                   max={500}
                 />
               </div>
+              <p className="mt-1 text-xs text-slate-500 sm:hidden">$100 - $500</p>
               {priceError && (
                 <p className="mt-1 text-sm text-red-400">{priceError}</p>
               )}
