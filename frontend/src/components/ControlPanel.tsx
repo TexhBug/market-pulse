@@ -104,7 +104,10 @@ export function ControlPanel({ stats, onCommand }: ControlPanelProps) {
             step="0.05"
             value={spread}
             onChange={handleSpreadChange}
-            className="w-full mt-1 accent-yellow-400"
+            className="w-full h-2 mt-1 rounded-lg cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, #facc15 ${((spread - 0.05) / (0.25 - 0.05)) * 100}%, #334155 ${((spread - 0.05) / (0.25 - 0.05)) * 100}%)`
+            }}
           />
         </div>
         <div className="min-w-0">
@@ -119,7 +122,10 @@ export function ControlPanel({ stats, onCommand }: ControlPanelProps) {
             step="0.25"
             value={Math.min(speed, 2)}
             onChange={handleSpeedChange}
-            className="w-full mt-1 accent-cyan-400"
+            className="w-full h-2 mt-1 rounded-lg cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, #22d3ee ${((Math.min(speed, 2) - 0.25) / (2 - 0.25)) * 100}%, #334155 ${((Math.min(speed, 2) - 0.25) / (2 - 0.25)) * 100}%)`
+            }}
           />
         </div>
       </div>

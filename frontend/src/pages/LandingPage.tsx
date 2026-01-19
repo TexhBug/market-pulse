@@ -139,7 +139,10 @@ export function LandingPage() {
                 type="range"
                 value={spread}
                 onChange={(e) => setSpread(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+                className="w-full h-2 rounded-lg cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #22c55e ${((spread - 0.05) / (0.25 - 0.05)) * 100}%, #334155 ${((spread - 0.05) / (0.25 - 0.05)) * 100}%)`
+                }}
                 min={0.05}
                 max={0.25}
                 step={0.05}
@@ -157,7 +160,10 @@ export function LandingPage() {
                 type="range"
                 value={speed}
                 onChange={(e) => setSpeed(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                className="w-full h-2 rounded-lg cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #3b82f6 ${((speed - 0.25) / (2 - 0.25)) * 100}%, #334155 ${((speed - 0.25) / (2 - 0.25)) * 100}%)`
+                }}
                 min={0.25}
                 max={2}
                 step={0.25}
