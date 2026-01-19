@@ -190,12 +190,28 @@ export function LandingPage() {
           {/* Intensity Selection */}
           <div className="mb-8">
             <label className="block text-sm font-medium text-slate-400 mb-3">Intensity</label>
-            <div className="flex gap-2">
-              {intensities.map((i) => (
+            <div className="grid grid-cols-3 gap-2">
+              {intensities.slice(0, 3).map((i) => (
                 <button
                   key={i.value}
                   onClick={() => setIntensity(i.value)}
-                  className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
+                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
+                    intensity === i.value
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-slate-600 hover:border-slate-500 bg-slate-700/30'
+                  }`}
+                >
+                  <div className="font-medium text-sm">{i.label}</div>
+                  <div className="text-xs text-slate-400">{i.multiplier}</div>
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {intensities.slice(3).map((i) => (
+                <button
+                  key={i.value}
+                  onClick={() => setIntensity(i.value)}
+                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
                     intensity === i.value
                       ? 'border-blue-500 bg-blue-500/10'
                       : 'border-slate-600 hover:border-slate-500 bg-slate-700/30'
