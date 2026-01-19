@@ -107,7 +107,7 @@ Navigate to **http://localhost:5173**
 | Spread | $0.05-$0.25 | $0.05 | Bid-ask spread |
 | Sentiment | 6 options | Neutral | Market direction bias |
 | Intensity | 5 levels | Normal | Price movement magnitude |
-| Speed | 0.25x-4x | 1x | Simulation speed |
+| Speed | 0.25x-2x | 1x | Simulation speed |
 
 ### Command Line Options (C++ Server)
 
@@ -121,7 +121,7 @@ Options:
   --spread <value>        Initial spread ($0.05 - $0.25, default: $0.05)
   --sentiment <type>      bullish|bearish|volatile|sideways|choppy|neutral
   --intensity <level>     mild|moderate|normal|aggressive|extreme
-  --speed <value>         Speed multiplier (0.25 - 4.0)
+  --speed <value>         Speed multiplier (0.25 - 2.0)
   -a, --auto-start        Skip 'press any key' prompt
   --headless              Run without terminal UI (for WebSocket mode)
   -h, --help              Show help

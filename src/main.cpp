@@ -52,7 +52,7 @@ struct SimulationConfig {
     double spread = 0.05;           // Initial spread ($0.05 - $0.25)
     Sentiment sentiment = Sentiment::NEUTRAL;
     Intensity intensity = Intensity::NORMAL;
-    double speedMultiplier = 1.0;   // Order generation speed (0.25x - 4x)
+    double speedMultiplier = 1.0;   // Order generation speed (0.25x - 2x)
     bool autoStart = false;         // Skip "press any key" prompt
     bool waitForWebSocket = false;  // Wait for WebSocket start command
     bool headless = false;          // No terminal visualization, just logs
@@ -62,7 +62,7 @@ struct SimulationConfig {
     void validate() {
         basePrice = std::max(100.0, std::min(500.0, basePrice));
         spread = std::max(0.05, std::min(0.25, spread));
-        speedMultiplier = std::max(0.25, std::min(4.0, speedMultiplier));
+        speedMultiplier = std::max(0.25, std::min(2.0, speedMultiplier));
         // Round to tick size
         basePrice = std::round(basePrice / 0.05) * 0.05;
         spread = std::round(spread / 0.05) * 0.05;
@@ -428,8 +428,8 @@ void keyboardHandler() {
                 case 'F':
                     {
                         double speed = g_speedMultiplier.load();
-                        if (speed < 4.0) {
-                            g_speedMultiplier = std::min(4.0, speed * 2.0);
+                        if (speed < 2.0) {
+                            g_speedMultiplier = std::min(2.0, speed * 2.0);
                         }
                     }
                     break;
@@ -735,7 +735,7 @@ void printUsage(const char* programName) {
     std::cout << "  M/N/A/X   - Set intensity (M=Mild N=Normal A=Aggressive X=eXtreme)\n";
     std::cout << "  + / -     - Increase/decrease spread\n";
     std::cout << "  P         - Pause/Resume simulation\n";
-    std::cout << "  F / S     - Faster/Slower (speed 0.25x - 4x)\n";
+    std::cout << "  F / S     - Faster/Slower (speed 0.25x - 2x)\n";
     std::cout << "  SPACE     - Cycle to next sentiment\n";
     std::cout << "  TAB       - Cycle to next intensity\n";
     std::cout << "  Q / ESC   - Quit\n";
@@ -821,7 +821,7 @@ void getConfigInteractive(SimulationConfig& config) {
     }
     
     // Speed
-    std::cout << "\nSpeed (0.25x - 4x) [" << config.speedMultiplier << "]: ";
+    std::cout << "\nSpeed (0.25x - 2x) [" << config.speedMultiplier << "]: ";
     std::getline(std::cin, input);
     if (!input.empty()) {
         try {

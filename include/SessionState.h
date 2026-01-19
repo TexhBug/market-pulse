@@ -49,7 +49,7 @@ struct SessionConfig {
     void validate() {
         basePrice = std::max(100.0, std::min(500.0, basePrice));
         spread = std::max(0.05, std::min(0.25, spread));
-        speed = std::max(0.25, std::min(4.0, speed));
+        speed = std::max(0.25, std::min(2.0, speed));
         // Round to tick size
         basePrice = std::round(basePrice / 0.05) * 0.05;
         spread = std::round(spread / 0.05) * 0.05;
@@ -103,7 +103,7 @@ public:
     // Speed
     double getSpeed() const { return m_config.speed; }
     void setSpeed(double speed) {
-        m_config.speed = std::max(0.25, std::min(4.0, speed));
+        m_config.speed = std::max(0.25, std::min(2.0, speed));
     }
     
     // Sentiment

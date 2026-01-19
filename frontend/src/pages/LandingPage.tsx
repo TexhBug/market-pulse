@@ -155,12 +155,12 @@ export function LandingPage() {
                 onChange={(e) => setSpeed(Number(e.target.value))}
                 className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
                 min={0.25}
-                max={4}
+                max={2}
                 step={0.25}
               />
               <div className="flex justify-between text-xs text-slate-500 mt-1">
                 <span>0.25x</span>
-                <span>4x</span>
+                <span>2x</span>
               </div>
             </div>
           </div>
