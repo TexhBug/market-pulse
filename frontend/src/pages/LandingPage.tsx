@@ -238,21 +238,21 @@ export function LandingPage() {
         </div>
 
         {/* Features */}
-        <div className="mt-12 grid grid-cols-3 gap-6 text-center">
-          <div className="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-            <div className="text-3xl mb-2">📈</div>
-            <h3 className="font-semibold mb-1">Real-time Charts</h3>
-            <p className="text-sm text-slate-400">Live price updates with smooth animations</p>
+        <div className="mt-12 grid grid-cols-3 gap-2 sm:gap-6 text-center">
+          <div className="p-2 sm:p-6 bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
+            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">📈</div>
+            <h3 className="font-semibold mb-1 text-xs sm:text-base truncate">Real-time Charts</h3>
+            <p className="text-[10px] sm:text-sm text-slate-400 line-clamp-2">Live price updates with smooth animations</p>
           </div>
-          <div className="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-            <div className="text-3xl mb-2">📊</div>
-            <h3 className="font-semibold mb-1">Order Book</h3>
-            <p className="text-sm text-slate-400">Bid/ask depth visualization</p>
+          <div className="p-2 sm:p-6 bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
+            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">📊</div>
+            <h3 className="font-semibold mb-1 text-xs sm:text-base truncate">Order Book</h3>
+            <p className="text-[10px] sm:text-sm text-slate-400 line-clamp-2">Bid/ask depth visualization</p>
           </div>
-          <div className="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-            <div className="text-3xl mb-2">⚡</div>
-            <h3 className="font-semibold mb-1">Interactive</h3>
-            <p className="text-sm text-slate-400">Change sentiment & intensity live</p>
+          <div className="p-2 sm:p-6 bg-slate-800/30 rounded-xl border border-slate-700/50 overflow-hidden">
+            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">⚡</div>
+            <h3 className="font-semibold mb-1 text-xs sm:text-base truncate">Interactive</h3>
+            <p className="text-[10px] sm:text-sm text-slate-400 line-clamp-2">Change sentiment & intensity live</p>
           </div>
         </div>
       </main>
