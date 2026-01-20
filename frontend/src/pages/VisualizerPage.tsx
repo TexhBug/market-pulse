@@ -12,9 +12,22 @@ import type { Sentiment, Intensity } from '../types';
 export function VisualizerPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { connected, sessionTimedOut, sessionStartTime, orderBook, trades, stats, priceHistory, candleCache, currentCandles, sendCommand, requestCandles, connect, disconnect, latency } = useWebSocket();
+  const { connected, connecting, sessionTimedOut, sessionStartTime, orderBook, trades, stats, priceHistory, candleCache, currentCandles, sendCommand, requestCandles, connect, disconnect, latency } = useWebSocket();
   const hasConnected = useRef(false);
   const [priceZeroModal, setPriceZeroModal] = useState(false);
+  
+  // Loading state: show overlay until we receive first data
+  const isLoading = !orderBook && !sessionTimedOut;
+  const [loadingDots, setLoadingDots] = useState('');
+  
+  // Animate loading dots
+  useEffect(() => {
+    if (!isLoading) return;
+    const interval = setInterval(() => {
+      setLoadingDots(prev => prev.length >= 3 ? '' : prev + '.');
+    }, 500);
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   // Parse config from URL params
   const config: SimulationConfig = {
@@ -60,6 +73,47 @@ export function VisualizerPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white overflow-auto">
+      {/* Loading Overlay - shown while waiting for backend to spin up */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900">
+          <div className="text-center max-w-md mx-4">
+            {/* Animated spinner */}
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-transparent border-t-green-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-2 border-4 border-transparent border-t-green-400 rounded-full animate-spin" style={{ animationDuration: '0.8s', animationDirection: 'reverse' }}></div>
+            </div>
+            
+            <h2 className="text-xl font-semibold text-white mb-2">
+              {connecting ? 'Connecting to Server' : 'Waiting for Data'}{loadingDots}
+            </h2>
+            
+            <p className="text-slate-400 mb-4">
+              {connecting 
+                ? 'Establishing WebSocket connection...'
+                : 'Server is spinning up and preparing market data...'}
+            </p>
+            
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-sm text-slate-500">
+              <p className="flex items-center justify-center gap-2">
+                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Free tier servers may take up to 60 seconds to wake up
+              </p>
+            </div>
+            
+            {/* Back button */}
+            <button
+              onClick={handleBack}
+              className="mt-6 text-slate-500 hover:text-slate-300 text-sm underline transition-colors"
+            >
+              ← Back to configuration
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Session Timeout Modal */}
       {sessionTimedOut && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
