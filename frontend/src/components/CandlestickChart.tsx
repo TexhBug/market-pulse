@@ -517,13 +517,29 @@ export function CandlestickChart({ data, stats, candleCache, currentCandles, req
             </div>
           </EducationalTooltip>
           
-          {/* Timeframe selector */}
+          {/* Timeframe selector - buttons on large screens, dropdown on small */}
           <EducationalTooltip
             enabled={educationalMode}
             content="Timeframe determines how much data each candle/point represents. 'Tick' shows every price update, '1s' aggregates 1 second of data per candle, '5m' aggregates 5 minutes, etc."
             position="bottom"
           >
-            <div className="flex bg-slate-700 rounded-lg p-1">
+            {/* Dropdown for small screens */}
+            <div className="sm:hidden bg-slate-700 rounded-lg p-1">
+              <select
+                value={timeframe}
+                onChange={(e) => setTimeframe(Number(e.target.value) as Timeframe)}
+                className="bg-green-600 text-white text-xs rounded px-3 py-1 border-none outline-none cursor-pointer appearance-none pr-6"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 4px center', backgroundSize: '14px' }}
+              >
+                {TIMEFRAMES.map(tf => (
+                  <option key={tf.value} value={tf.value} className="bg-slate-700 text-white">
+                    {tf.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Buttons for larger screens */}
+            <div className="hidden sm:flex bg-slate-700 rounded-lg p-1">
               {TIMEFRAMES.map(tf => (
                 <button
                   key={tf.value}
